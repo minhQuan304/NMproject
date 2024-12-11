@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.NMproject.dto.AccountResponse;
 import com.example.NMproject.dto.ApiResponse;
 import com.example.NMproject.dto.RegisterRequest;
-import com.example.NMproject.dto.UserResponse;
-import com.example.NMproject.entity.UserEntity;
-import com.example.NMproject.service.UserService;
+import com.example.NMproject.entity.AccountEntity;
+import com.example.NMproject.service.AccountService;
 
 @Controller
 @RequestMapping("/api/auth")
-public class UserController {
+public class AccountController {
 	@Autowired
-	private UserService userService;
+	private AccountService userService;
 
 	@GetMapping("/login")
 	public String loginPage() {
@@ -30,10 +30,10 @@ public class UserController {
 	// Đăng nhập người dùng bằng email
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
-		Optional<UserEntity> user = userService.loginUser(request.getEmail(), request.getPassword()); // Dùng email thay
-																										// cho username
+		Optional<AccountEntity> user = userService.loginUser(request.getEmail(), request.getPassword());
 		return user.map(u -> {
-			UserResponse userResponse = new UserResponse(u.getId(), u.getEmail()); // Trả về email thay vì username
+			// Thêm avatarUrl vào trong response
+			AccountResponse userResponse = new AccountResponse(u.getId(), u.getEmail(), u.getUsername());
 			return ResponseEntity.ok(new ApiResponse("User login successfully", userResponse));
 		}).orElseGet(() -> {
 			return ResponseEntity.status(401).body(new ApiResponse("Invalid email or password"));
@@ -43,12 +43,20 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 		try {
-			UserEntity newUser = userService.registerUser(request.getEmail(), request.getUsername(),
-					request.getPassword()); // Truyền thêm username
-			UserResponse userResponse = new UserResponse(newUser.getId(), newUser.getEmail());
+			// Đăng ký người dùng mới
+			AccountEntity newUser = userService.registerUser(request.getEmail(), request.getUsername(),
+					request.getPassword());
+
+			// Trả về đối tượng AccountResponse với đầy đủ thông tin
+			AccountResponse userResponse = new AccountResponse(newUser.getId(), newUser.getEmail(),
+					newUser.getPassword(), newUser.getUsername());
+
+			// Trả về phản hồi thành công
 			return ResponseEntity.ok(new ApiResponse("User registered successfully", userResponse));
 		} catch (Exception e) {
+			// Xử lý lỗi nếu có
 			return ResponseEntity.badRequest().body(new ApiResponse("Error: " + e.getMessage()));
 		}
 	}
+
 }

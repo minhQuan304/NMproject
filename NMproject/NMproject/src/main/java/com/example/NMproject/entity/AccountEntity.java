@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "usersList")
+@Table(name = "account") // Đổi tên bảng từ "usersList" thành "account"
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
+public class AccountEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -22,10 +22,9 @@ public class UserEntity {
 	private String username;
 	private String password;
 
-	public UserEntity(String email, String username, String password) {
+	public AccountEntity(String email, String username, String password) {
 		this.email = email;
 		this.username = username;
 		this.password = password;
 	}
-
 }
