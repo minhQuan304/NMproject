@@ -1,6 +1,7 @@
 package com.example.NMproject.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 			+ "OR LOWER(b.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<Book> searchBooksByKeyword(String keyword);
 
+	@Query("SELECT b FROM Book b WHERE b.bookId = :id")
+	Optional<Book> findBookById(Long id);
 }
