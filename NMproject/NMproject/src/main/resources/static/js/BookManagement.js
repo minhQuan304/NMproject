@@ -1,5 +1,5 @@
 const API_URL = "http://localhost:8081/api/books";
-
+const localhost = "http://localhost:8081";
 let currentBookId = null;
 let currentPage = 1;
 let rowsPerPage = 10;
@@ -292,7 +292,7 @@ function showBookDetail(id) {
       detailContent.innerHTML = `
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2 flex justify-left">
-            <img th:src="@{/hinh_anh/anh_sach/book1.png}"  
+            <img src="${API_URL}${book.imageLink}" 
                  alt="${book.title || book.name}" 
                  class="h-48 w-48 object-cover rounded-lg" >
           </div>

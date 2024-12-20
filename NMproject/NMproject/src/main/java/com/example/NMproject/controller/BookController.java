@@ -2,10 +2,8 @@ package com.example.NMproject.controller;
 
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.NMproject.dto.BookDTO;
-import com.example.NMproject.entity.Book;
 import com.example.NMproject.service.BookService;
 
 @Controller
@@ -39,96 +36,45 @@ public class BookController {
 
 	@GetMapping("/allbooks")
 	public ResponseEntity<List<BookDTO>> getAllBooks() {
-		try {
-			List<Book> books = bookService.getAllBooks();
-			List<BookDTO> bookDTOs = books.stream()
-					.map(book -> BookDTO.builder().bookId(book.getBookId()).title(book.getTitle())
-							.category(book.getCategory()).author(book.getAuthor()).publishDate(book.getPublishDate())
-							.imageLink(book.getImageLink()).description(book.getDescription())
-							.quantityTotal(book.getQuantityTotal()).quantityValid(book.getQuantityValid())
-							.rate(book.getRate()).build())
-					.collect(Collectors.toList());
-			return ResponseEntity.ok(bookDTOs);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+		List<BookDTO> bookDTOs = bookService.getAllBooks();
+		return ResponseEntity.ok(bookDTOs);
 	}
 
-	// Endpoint tìm kiếm sách theo từ khóa
 	@PostMapping("/search")
 	public ResponseEntity<List<BookDTO>> searchBooksByKeyword(@RequestBody Map<String, String> payload) {
-		try {
-			String keyword = payload.get("keyword");
-			if (keyword == null || keyword.trim().isEmpty()) {
-				return ResponseEntity.badRequest().body(Collections.emptyList());
-			}
-			List<BookDTO> books = bookService.searchBooksByKeyword(keyword).stream()
-					.map(book -> BookDTO.builder().bookId(book.getBookId()).title(book.getTitle())
-							.category(book.getCategory()).author(book.getAuthor()).publishDate(book.getPublishDate())
-							.imageLink(book.getImageLink()).description(book.getDescription())
-							.quantityTotal(book.getQuantityTotal()).quantityValid(book.getQuantityValid())
-							.rate(book.getRate()).build())
-					.collect(Collectors.toList());
-			return ResponseEntity.ok(books);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList()); // Trả về danh
-																											// sách rỗng
-																											// nếu có
-																											// lỗi
-		}
+		String keyword = payload.get("keyword");
+		List<BookDTO> bookDTO = bookService.searchBooksByKeyword(keyword);
+		return ResponseEntity.ok(bookDTO);
 	}
 
 	@PostMapping("/addbooks")
 	public ResponseEntity<BookDTO> addBook(@RequestBody BookDTO bookDTO) {
-		try {
-			if (bookDTO == null || bookDTO.getTitle() == null || bookDTO.getTitle().isEmpty()) {
-				return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu thông tin không hợp lệ
-			}
-
-			// Gọi service để thêm sách
-			bookService.addBook(bookDTO);
-
-			return ResponseEntity.status(HttpStatus.CREATED).body(bookDTO); // Trả về JSON của BookDTO
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Trả về lỗi nếu có ngoại lệ
-		}
+		BookDTO addedBook = bookService.addBook(bookDTO);
+		return ResponseEntity.status(HttpStatus.CREATED).body(addedBook);
 	}
 
 	@PutMapping("/update/{id}")
 	public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO) {
-		try {
-			// Kiểm tra xem bookDTO có hợp lệ không
-			if (bookDTO == null) {
-				return ResponseEntity.badRequest().body(null); // Nếu bookDTO là null, trả về lỗi
-			}
-
-			// Gọi service để cập nhật thông tin sách
-			BookDTO updatedBook = bookService.updateBook(id, bookDTO);
-
-			// Trả về BookDTO đã cập nhật dưới dạng JSON
-			return ResponseEntity.ok(updatedBook);
-
-		} catch (Exception e) {
-			// Trả về lỗi nếu có ngoại lệ
-			return ResponseEntity.status(500).body(null);
-		}
+		BookDTO updatedBook = bookService.updateBook(id, bookDTO);
+		return ResponseEntity.ok(updatedBook);
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Map<String, String>> deleteBookById(@PathVariable Long id) {
-		try {
-			// Gọi service để xóa sách theo id
-			bookService.deleteBookById(id);
+	public ResponseEntity<BookDTO> deleteBookById(@PathVariable Long id) {
+		// Kiểm tra xem sách có tồn tại hay không
+		BookDTO bookDTO = bookService.getBookById(id); // Lấy thông tin sách nếu cần
 
-			// Trả về JSON thông báo kết quả xóa thành công
-			Map<String, String> response = Collections.singletonMap("message", "Book deleted successfully");
-			return ResponseEntity.ok(response); // Trả về mã trạng thái OK và thông báo JSON
-		} catch (Exception e) {
-			// Trả về thông báo lỗi nếu có vấn đề
-			Map<String, String> errorResponse = Collections.singletonMap("error", "Book not found or failed to delete");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-		}
+		// Tiến hành xóa sách
+		bookService.deleteBookById(id);
+
+		// Trả về phản hồi giống như addBook
+		return ResponseEntity.ok(bookDTO); // Trả về BookDTO sau khi xóa
+	}
+
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
+		BookDTO bookDTO = bookService.getBookById(id);
+		return ResponseEntity.ok(bookDTO);
 	}
 
 	@GetMapping("/image/{filename:.+}")
@@ -153,30 +99,4 @@ public class BookController {
 			return ResponseEntity.badRequest().build();
 		}
 	}
-
-	// Thêm endpoint POST để tìm sách theo ID
-	@GetMapping("/detail/{id}")
-	public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
-		try {
-			// Tìm sách theo ID từ service
-			Book book = bookService.getBookById(id);
-
-			// Kiểm tra nếu không tìm thấy sách
-			if (book == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-			}
-
-			// Chuyển đổi Book thành BookDTO và trả về
-			BookDTO bookDTO = BookDTO.builder().bookId(book.getBookId()).title(book.getTitle())
-					.category(book.getCategory()).author(book.getAuthor()).publishDate(book.getPublishDate())
-					.imageLink(book.getImageLink()).description(book.getDescription())
-					.quantityTotal(book.getQuantityTotal()).quantityValid(book.getQuantityValid()).rate(book.getRate())
-					.build();
-
-			return ResponseEntity.ok(bookDTO);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-	}
-
 }
