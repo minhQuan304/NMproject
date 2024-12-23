@@ -17,7 +17,7 @@ import lombok.Setter;
 @Builder
 public class BookDTO {
 
-	private Long bookId;
+	private Long bookID;
 	private String title;
 	private String category;
 	private String author;
@@ -33,7 +33,7 @@ public class BookDTO {
 	private Double rate; // Đánh giá quyển sách
 
 	public BookDTO(Long bookId, String imageLink, String category, String title) {
-		this.bookId = bookId;
+		this.bookID = bookId;
 		this.imageLink = imageLink;
 		this.category = category;
 		this.title = title;

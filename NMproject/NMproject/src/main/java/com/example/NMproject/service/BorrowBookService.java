@@ -27,8 +27,8 @@ public class BorrowBookService {
 		List<BorrowBookDTO.BorrowedBookDetailDTO> borrowedBooks = new ArrayList<>();
 		for (Object[] detail : borrowDetails) {
 			BorrowBookDTO.BorrowedBookDetailDTO borrowedBookDetailDTO = new BorrowBookDTO.BorrowedBookDetailDTO();
-			borrowedBookDetailDTO.setBorrowId((Long) detail[0]); // borrowID
-			borrowedBookDetailDTO.setBookId((Long) detail[2]); // bookID
+			borrowedBookDetailDTO.setBorrowID((Long) detail[0]); // borrowID
+			borrowedBookDetailDTO.setBookID((Long) detail[2]); // bookID
 			borrowedBookDetailDTO.setTitle((String) detail[3]); // Title
 			borrowedBookDetailDTO.setBorrowDate((LocalDateTime) detail[4]); // Borrow date
 			borrowedBookDetailDTO.setDueDate((LocalDateTime) detail[5]); // Due date

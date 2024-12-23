@@ -13,8 +13,8 @@ public class BorrowBookDTO {
 
 	@Data
 	public static class BorrowedBookDetailDTO {
-		private Long borrowId; // Thay đổi thành Integeru
-		private Long bookId;
+		private Long borrowID; // Thay đổi thành Integeru
+		private Long bookID;
 		private String title;
 		private LocalDateTime borrowDate;
 		private LocalDateTime dueDate;

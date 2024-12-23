@@ -1,6 +1,7 @@
 package com.example.NMproject.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import com.example.NMproject.dto.RegisterRequest;
 import com.example.NMproject.entity.AccountEntity;
 import com.example.NMproject.service.AccountService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/api/auth")
 public class AccountController {
@@ -32,24 +35,39 @@ public class AccountController {
 		return "loginRegister"; // Trả về file loginRegister.html trong thư mục templates
 	}
 
-	// Đăng nhập người dùng bằng email và password
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
+	public ResponseEntity<?> login(@RequestBody RegisterRequest request, HttpSession session) {
 		Optional<AccountEntity> user = userService.loginUser(request.getEmail(), request.getPassword());
 		return user.map(u -> {
-			// Tạo AccountResponse với đầy đủ thông tin, bao gồm cả avatarUrl và userRole
-			AccountResponse userResponse = new AccountResponse(u.getUserID(), u.getEmail(), u.getUsername(),
-					u.getName(), u.getPhone(), u.getAddress(), u.getUserRole() // Lấy userRole từ AccountEntity
-			);
-			return ResponseEntity.ok(userResponse); // Trả về thông tin người dùng dưới dạng JSON
+
+			// Trả về trực tiếp các trường userID, username, và pathPicture
+			return ResponseEntity.ok(Map.of("message", "User login successfully", "userID", u.getUserID(), "username",
+					u.getUsername(), "pathPicture", u.getPathPicture() != null ? u.getPathPicture() : "null" // Xử lý
+																												// null
+			));
 		}).orElseGet(() -> {
-			// Khi đăng nhập thất bại, trả về một đối tượng AccountResponse với avatarUrl
-			// mặc định và userRole là 0
-			AccountResponse errorResponse = new AccountResponse();
-			return ResponseEntity.status(401).body(errorResponse); // Trả về ResponseEntity với lỗi 401 và đối tượng
-																	// AccountResponse rỗng
+			// Trả về response nếu email hoặc mật khẩu sai
+			return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
 		});
 	}
+	// Đăng nhập người dùng bằng email và password
+//	@PostMapping("/login")
+//	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
+//		Optional<AccountEntity> user = userService.loginUser(request.getEmail(), request.getPassword());
+//		return user.map(u -> {
+//			// Tạo AccountResponse với đầy đủ thông tin, bao gồm cả avatarUrl và userRole
+//			AccountResponse userResponse = new AccountResponse(u.getUserID(), u.getEmail(), u.getUsername(),
+//					u.getName(), u.getPhone(), u.getAddress(), u.getUserRole() // Lấy userRole từ AccountEntity
+//			);
+//			return ResponseEntity.ok(userResponse); // Trả về thông tin người dùng dưới dạng JSON
+//		}).orElseGet(() -> {
+//			// Khi đăng nhập thất bại, trả về một đối tượng AccountResponse với avatarUrl
+//			// mặc định và userRole là 0
+//			AccountResponse errorResponse = new AccountResponse();
+//			return ResponseEntity.status(401).body(errorResponse); // Trả về ResponseEntity với lỗi 401 và đối tượng
+//																	// AccountResponse rỗng
+//		});
+//	}
 
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequest request) {

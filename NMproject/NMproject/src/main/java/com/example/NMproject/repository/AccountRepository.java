@@ -31,4 +31,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 	@Transactional
 	@Query("DELETE FROM AccountEntity a WHERE a.userID = :userID")
 	void deleteByUserID(@Param("userID") long userID);
+
+	Optional<AccountEntity> findById(long id);
 }

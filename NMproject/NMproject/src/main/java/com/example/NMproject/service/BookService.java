@@ -70,7 +70,7 @@ public class BookService {
 	}
 
 	private BookDTO convertToDTO(Book book) {
-		return BookDTO.builder().bookId(book.getBookId()).title(book.getTitle()).category(book.getCategory())
+		return BookDTO.builder().bookID(book.getBookId()).title(book.getTitle()).category(book.getCategory())
 				.author(book.getAuthor()).publishDate(book.getPublishDate()).imageLink(book.getImageLink())
 				.description(book.getDescription()).quantityTotal(book.getQuantityTotal())
 				.quantityValid(book.getQuantityValid()).rate(book.getRate()).build();

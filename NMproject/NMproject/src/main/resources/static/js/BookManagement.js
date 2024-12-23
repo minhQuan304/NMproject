@@ -1,11 +1,7 @@
-const API_URL = "http://localhost:8081/api/books";
-const localhost = "http://localhost:8081";
-let currentBookId = null;
-let currentPage = 1;
-let rowsPerPage = 10;
-let totalPages = 1;
-let allBooks = [];
-let filteredBooks = [];
+// Thêm vào đầu file
+window.initializeUI = initializeUI;
+window.fetchBooks = fetchBooks;
+window.updateTableDisplay = updateTableDisplay;
 
 // Thêm event listener khi trang được load
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,11 +10,21 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchBooks();
 });
 
-// Khởi tạo giao diện
+const API_URL = "http://localhost:8081/api/books";
+
+let currentBookId = null;
+let currentPage = 1;
+let rowsPerPage = 10;
+let totalPages = 1;
+let allBooks = [];
+let filteredBooks = [];
+
+// Sửa lại hàm initializeUI
 function initializeUI() {
   console.log("Initializing UI...");
   setupDropdownAndUI();
-  fetchBooks(); // Load dữ liệu ngay sau khi setup UI
+  initializeSearch();
+  // Bỏ fetchBooks() ở đây vì nó sẽ được gọi từ loadContent.js
 }
 
 // Setup UI components
@@ -51,12 +57,12 @@ function setupDropdownAndUI() {
       const dropdownButton = document.createElement("div");
       dropdownButton.innerHTML = `
         <div class="relative">
-          <button 
-            class="bg-green-500 text-white p-3 rounded-full hover:bg-yellow-500 transition duration-400"
-            id="bookOptionsButton"
-          >
-            <i class="fa fa-book-open text-base"></i>
-          </button>
+              <button 
+                class="bg-green-500 text-white p-3 rounded-full hover:bg-yellow-500 transition duration-400"
+                id="bookOptionsButton"
+              >
+                <i class="fa fa-book-open animate-bounce text-base"></i>
+              </button>
           <div 
             id="bookDropdownMenu" 
             class="hidden absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
@@ -173,7 +179,7 @@ function updateTableDisplay() {
         ${formatDate(book.publishDate)}
       </td>
     `;
-    row.addEventListener("click", () => showBookDetail(book.bookId));
+    row.addEventListener("click", () => showBookDetail(book.bookID));
     tableBody.appendChild(row);
   });
 
@@ -236,52 +242,6 @@ document.getElementById("rowsPerPage").addEventListener("change", (e) => {
   updateTableDisplay();
 });
 
-// Sửa lại event listener cho ô tìm kiếm
-document.getElementById("searchInput").addEventListener("input", function (e) {
-  const searchTerm = e.target.value.toLowerCase().trim();
-  console.log("Searching for:", searchTerm);
-
-  if (searchTerm === "") {
-    // Nếu ô tìm kiếm trống, hiển thị lại tất cả sách
-    filteredBooks = [];
-    currentPage = 1;
-    updateTableDisplay();
-    return;
-  }
-
-  // Lọc sách dựa trên từ khóa tìm kiếm
-  filteredBooks = allBooks.filter((book) => {
-    return (
-      book.title.toLowerCase().includes(searchTerm) ||
-      book.author.toLowerCase().includes(searchTerm) ||
-      book.category.toLowerCase().includes(searchTerm) ||
-      (book.description && book.description.toLowerCase().includes(searchTerm))
-    );
-  });
-
-  // Nếu không tìm thấy kết quả, xóa hết nội dung bảng
-  if (filteredBooks.length === 0) {
-    const tableBody = document.querySelector("#bookTable tbody");
-    tableBody.innerHTML = "";
-
-    // Cập nhật thông tin phân trang
-    document.getElementById("startRow").textContent = "0";
-    document.getElementById("endRow").textContent = "0";
-    document.getElementById("totalRows").textContent = "0";
-
-    // Xóa các nút phân trang
-    document.getElementById("pageNumbers").innerHTML = "";
-
-    // Disable nút prev/next
-    document.getElementById("prevPage").disabled = true;
-    document.getElementById("nextPage").disabled = true;
-    return;
-  }
-
-  currentPage = 1; // Reset về trang 1 khi tìm kiếm
-  updateTableDisplay();
-});
-
 // Thêm các hàm xử lý modal chi tiết
 function showBookDetail(id) {
   currentBookId = id;
@@ -294,10 +254,10 @@ function showBookDetail(id) {
           <div class="col-span-2 flex justify-left">
             <img src="${API_URL}${book.imageLink}" 
                  alt="${book.title || book.name}" 
-                 class="h-48 w-48 object-cover rounded-lg" >
+                 class="h-48 w-48 object-cover rounded-lg">
           </div>
           <div class="font-medium text-gray-500">Mã sách:</div>
-          <div>${book.bookId || book.id}</div>
+          <div>${book.bookID || book.id}</div>
           <div class="font-medium text-gray-500">Tên sách:</div>
           <div>${book.title || book.name}</div>
           <div class="font-medium text-gray-500">Tác giả:</div>
@@ -330,9 +290,8 @@ function closeDetailModal() {
 }
 
 function handleDelete() {
-  if (currentBookId && confirm("Bạn có chắc muốn xóa sách này?")) {
+  if (currentBookId) {
     deleteBook(currentBookId);
-    closeDetailModal();
   }
 }
 
@@ -366,32 +325,32 @@ document
     }
 
     const newBook = {
-      title: document.getElementById("name").value,
+      name: document.getElementById("name").value,
       author: document.getElementById("author").value,
       category: document.getElementById("category").value,
       description: document.getElementById("description").value || null,
-      publishDate: document.getElementById("date").value,
-      quantityTotal: parseInt(document.getElementById("totalQuantity").value),
-      quantityValid: parseInt(
+      date: document.getElementById("date").value,
+      totalQuantity: parseInt(document.getElementById("totalQuantity").value),
+      availableQuantity: parseInt(
         document.getElementById("availableQuantity").value
       ),
       imageLink: imageLink,
     };
 
     // Kiểm tra logic số lượng
-    //if (newBook.availableQuantity > newBook.totalQuantity) {
-     // alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
-      //return;
-    //}
+    if (newBook.availableQuantity > newBook.totalQuantity) {
+      alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
+      return;
+    }
 
     // Kiểm tra các trường bắt buộc
     if (
-      !newBook.title ||
+      !newBook.name ||
       !newBook.author ||
       !newBook.category ||
-      !newBook.publishDate ||
-      !newBook.quantityTotal ||
-      !newBook.quantityValid
+      !newBook.date ||
+      !newBook.totalQuantity ||
+      !newBook.availableQuantity
     ) {
       alert("Vui lòng điền đầy đủ thông tin!");
       return;
@@ -431,11 +390,11 @@ function showUpdateModal(id) {
   closeDetailModal();
   fetch(`${API_URL}/detail/${id}`)
     .then((response) => {
-      if (!response.ok) throw new Error(`${response.status}`);
+      if (!response.ok) throw new Error("Không thể lấy thông tin sách");
       return response.json();
     })
     .then((book) => {
-      document.getElementById("updateBookId").value = book.bookId;
+      document.getElementById("updateBookId").value = book.bookID;
       document.getElementById("updateName").value = book.title;
       document.getElementById("updateAuthor").value = book.author;
       document.getElementById("updateCategory").value = book.category;
@@ -550,12 +509,13 @@ function deleteBook(id) {
     method: "DELETE",
   })
     .then((response) => {
-      if (!response.ok) throw new Error("Lỗi khi xóa sách");
-      return response.json();
-    })
-    .then((data) => {
+      if (!response.ok) {
+        throw new Error("Lỗi khi xóa sách");
+      }
+      // Không cần đợi response.json() vì DELETE thường không trả về dữ liệu
       alert("Xóa sách thành công!");
-      fetchBooks();
+      closeDetailModal(); // Đóng modal chi tiết sau khi xóa
+      fetchBooks(); // Cập nhật lại danh sách
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -593,12 +553,6 @@ window.onclick = function (event) {
     }
   }
 };
-
-// Hàm xử lý lọc sách (có th thêm sau)
-function showFilterOptions() {
-  // Thêm code xử lý lọc sách ở đây
-  alert("Tính năng đang được phát triển");
-}
 
 function showModal(modalId) {
   const modal = document.getElementById(modalId);

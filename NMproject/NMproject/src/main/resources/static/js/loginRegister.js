@@ -13,7 +13,7 @@ async function handleRegistration(event) {
         username: document.querySelector('.register input[type="text"]').value,
         password: document.querySelector('.register input[type="password"]').value
     };
-    console.log(registrationData)
+    console.log(registrationData);
     try {
         // Send registration data to server
         const response = await fetch('http://localhost:8081/api/auth/register', {
@@ -30,8 +30,8 @@ async function handleRegistration(event) {
         }
     } catch (error) {
         console.error('Error:', error);
-    }
-}
+    };
+};
 
 async function handleLogin(event) {
     event.preventDefault();
@@ -39,20 +39,31 @@ async function handleLogin(event) {
         email: document.querySelector('.login input[type="email"]').value,
         password: document.querySelector('.login input[type="password"]').value
     };
-
     try {
         const response = await fetch('http://localhost:8081/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(loginData)
         });
-        if (response.ok) {
-            window.location.href = "/static/templates/home.html"	
+        if(response.ok){
+            const data = await response.json();
+            console.log(data);
+            const infoUser = {
+                username: data.username,
+                userID: data.userID,
+                imageLink: data.imageLink,
+                name: data.name,
+                address: data.address,
+                phone: data.phone
+            }
+            sessionStorage.setItem("isLogin", true);
+            sessionStorage.setItem("infoUser", JSON.stringify(infoUser));
+            window.location.href = "http://localhost:8081/api/home/home";
         }
     } catch (error) {
         console.error('Error:', error);
-    }
-}
+    };
+};
 
 registerLink.addEventListener('click', () => {
     wrapper.classList.add('active');
