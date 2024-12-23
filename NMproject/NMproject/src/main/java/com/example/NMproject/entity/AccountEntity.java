@@ -1,5 +1,7 @@
 package com.example.NMproject.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,20 +13,28 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "account") // Đổi tên bảng từ "usersList" thành "account"
+@Table(name = "account")
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int userID;
 	private String email;
 	private String username;
 	private String password;
+	private String name;
+	private String phone;
+	private String address;
+	private String pathPicture;
+	private LocalDateTime createAt;
+	private LocalDateTime updateAt;
+	private int userRole;
 
 	public AccountEntity(String email, String username, String password) {
 		this.email = email;
 		this.username = username;
 		this.password = password;
 	}
+
 }
