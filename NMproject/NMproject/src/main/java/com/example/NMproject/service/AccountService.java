@@ -38,7 +38,7 @@ public class AccountService {
 		return accountRepository.getAllUsersWithAccountInfo(); // Trả về danh sách AccountResponse
 	}
 
-	public void deleteUserById(int userID) {
+	public void deleteUserById(long userID) {
 		Optional<AccountEntity> user = accountRepository.findById(userID);
 		if (user.isPresent()) {
 			// Sử dụng phương thức deleteByUserID trong repository

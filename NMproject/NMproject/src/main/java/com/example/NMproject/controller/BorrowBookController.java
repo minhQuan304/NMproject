@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,4 +35,11 @@ public class BorrowBookController {
 		borrowBookService.deleteBorrowedBook(borrowID);
 		return ResponseEntity.ok().body(Map.of("message", "Xóa sách mượn thành công với borrowID: " + borrowID));
 	}
+
+	@PostMapping("/addBorrowbook")
+	public ResponseEntity<?> addBorrowedBook(@RequestBody BorrowBookDTO borrowBookDTO) {
+		borrowBookService.addBorrowedBook(borrowBookDTO);
+		return ResponseEntity.ok().body(Map.of("message", "Thêm sách mượn thành công"));
+	}
+
 }

@@ -31,4 +31,11 @@ public class BookDTO {
 	private Integer quantityTotal; // Tổng số sách
 	private Integer quantityValid; // Số sách còn hợp lệ
 	private Double rate; // Đánh giá quyển sách
+
+	public BookDTO(Long bookId, String imageLink, String category, String title) {
+		this.bookId = bookId;
+		this.imageLink = imageLink;
+		this.category = category;
+		this.title = title;
+	}
 }

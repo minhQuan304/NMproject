@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class AccountEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int userID;
+	private long userID;
 	private String email;
 	private String username;
 	private String password;
@@ -29,7 +29,7 @@ public class AccountEntity {
 	private String pathPicture;
 	private LocalDateTime createAt;
 	private LocalDateTime updateAt;
-	private int userRole;
+	private long userRole;
 
 	public AccountEntity(String email, String username, String password) {
 		this.email = email;

@@ -13,7 +13,7 @@ import com.example.NMproject.entity.AccountEntity;
 
 import jakarta.transaction.Transactional;
 
-public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
+public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
 	// Sử dụng @Query thay vì phương thức findByEmailAndPassword
 	@Query("SELECT a FROM AccountEntity a WHERE a.email = :email AND a.password = :password")
@@ -30,5 +30,5 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
 	@Modifying
 	@Transactional
 	@Query("DELETE FROM AccountEntity a WHERE a.userID = :userID")
-	void deleteByUserID(@Param("userID") int userID);
+	void deleteByUserID(@Param("userID") long userID);
 }

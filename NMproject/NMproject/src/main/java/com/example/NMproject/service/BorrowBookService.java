@@ -46,4 +46,10 @@ public class BorrowBookService {
 		borrowBookRepository.deleteByBorrowID(borrowID);
 	}
 
+	@Transactional
+	public void addBorrowedBook(BorrowBookDTO borrowBookDTO) {
+		borrowBookRepository.addBorrowedBook(borrowBookDTO.getUserId(), borrowBookDTO.getBookId(),
+				borrowBookDTO.getBorrowDate(), borrowBookDTO.getDueDate());
+	}
+
 }

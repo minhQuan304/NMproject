@@ -7,13 +7,13 @@ import lombok.Data;
 
 @Data
 public class BorrowBookDTO {
-	private int userId; // ID người dùng
+	private long userId; // ID người dùng
 	private String username; // Tên người dùng
 	private List<BorrowedBookDetailDTO> borrowedBooks;
 
 	@Data
 	public static class BorrowedBookDetailDTO {
-		private Long borrowId; // Thay đổi thành Integer
+		private Long borrowId; // Thay đổi thành Integeru
 		private Long bookId;
 		private String title;
 		private LocalDateTime borrowDate;
