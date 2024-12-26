@@ -33,6 +33,9 @@ public class CommentController {
 	@GetMapping("/getcmt/{bookID}")
 	public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long bookID) {
 		List<CommentDTO> comments = commentService.getCommentsByBookID(bookID);
+		if (comments.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
 		return ResponseEntity.ok(comments);
 	}
 

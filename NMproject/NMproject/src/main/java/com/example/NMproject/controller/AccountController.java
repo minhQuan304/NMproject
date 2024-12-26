@@ -1,16 +1,19 @@
 package com.example.NMproject.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -105,4 +108,26 @@ public class AccountController {
 			return ResponseEntity.badRequest().body(new ApiResponse("Error: " + e.getMessage()));
 		}
 	}
+
+	@PutMapping("/update")
+	public ResponseEntity<Map<String, String>> updateUserProfile(@RequestBody Map<String, Object> payload) {
+		long userID = Long.parseLong(payload.get("userID").toString());
+		String name = payload.get("name").toString();
+		String phone = payload.get("phone").toString();
+		String address = payload.get("address").toString();
+		try {
+			// Gọi service để cập nhật thông tin người dùng
+			userService.updateUserProfile(userID, name, phone, address);
+			// Trả về thông điệp thành công
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "User profile updated successfully");
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			// Trả về thông điệp lỗi nếu không tìm thấy người dùng
+			Map<String, String> response = new HashMap<>();
+			response.put("message", e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
 }

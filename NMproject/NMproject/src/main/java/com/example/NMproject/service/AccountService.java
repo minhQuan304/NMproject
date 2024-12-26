@@ -1,5 +1,6 @@
 package com.example.NMproject.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,4 +48,22 @@ public class AccountService {
 			throw new RuntimeException("User not found with ID: " + userID);
 		}
 	}
+
+	// Cập nhật thông tin profile của người dùng
+	public AccountEntity updateUserProfile(long userID, String name, String phone, String address) {
+		Optional<AccountEntity> accountOpt = accountRepository.findById(userID);
+
+		if (accountOpt.isPresent()) {
+			AccountEntity account = accountOpt.get();
+			account.setName(name);
+			account.setPhone(phone);
+			account.setAddress(address);
+			// Cập nhật thời gian cập nhật
+			account.setUpdateAt(LocalDateTime.now());
+			return accountRepository.save(account); // Lưu lại thông tin đã được cập nhật
+		} else {
+			throw new RuntimeException("User not found with ID: " + userID);
+		}
+	}
+
 }

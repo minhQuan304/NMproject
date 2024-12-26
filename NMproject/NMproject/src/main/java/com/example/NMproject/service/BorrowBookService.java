@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.NMproject.dto.BorrowBookDTO;
+import com.example.NMproject.entity.AccountEntity;
+import com.example.NMproject.entity.Book;
+import com.example.NMproject.entity.BorrowBook;
+import com.example.NMproject.repository.AccountRepository;
+import com.example.NMproject.repository.BookRepository;
 import com.example.NMproject.repository.BorrowBookRepository;
 
 import jakarta.transaction.Transactional;
@@ -17,6 +22,11 @@ public class BorrowBookService {
 
 	@Autowired
 	private BorrowBookRepository borrowBookRepository;
+	@Autowired
+	private AccountRepository accountRepository; // Inject AccountRepository
+
+	@Autowired
+	private BookRepository bookRepository; // Inject BookRepository
 
 	@Transactional
 	public List<BorrowBookDTO.BorrowedBookDetailDTO> getBorrowDetailsByUserId(Long userId) {
@@ -47,9 +57,33 @@ public class BorrowBookService {
 	}
 
 	@Transactional
-	public void addBorrowedBook(BorrowBookDTO borrowBookDTO) {
-		borrowBookRepository.addBorrowedBook(borrowBookDTO.getUserId(), borrowBookDTO.getBookId(),
-				borrowBookDTO.getBorrowDate(), borrowBookDTO.getDueDate());
+	public BorrowBookDTO.BorrowedBookDetailDTO addBorrowedBook(BorrowBookDTO borrowBookDTO) {
+		// Lấy AccountEntity và Book từ cơ sở dữ liệu
+		AccountEntity account = accountRepository.findById(borrowBookDTO.getUserID()).orElseThrow(
+				() -> new IllegalArgumentException("User not found with ID: " + borrowBookDTO.getUserID()));
+
+		Book book = bookRepository.findById(borrowBookDTO.getBookID()).orElseThrow(
+				() -> new IllegalArgumentException("Book not found with ID: " + borrowBookDTO.getBookID()));
+
+		// Tạo đối tượng BorrowBook
+		BorrowBook borrowBook = new BorrowBook();
+		borrowBook.setAccount(account);
+		borrowBook.setBook(book);
+		borrowBook.setBorrowDate(borrowBookDTO.getBorrowDate());
+		borrowBook.setDueDate(borrowBookDTO.getDueDate());
+
+		// Lưu vào cơ sở dữ liệu
+		BorrowBook savedBorrowBook = borrowBookRepository.save(borrowBook);
+
+		// Tạo DTO để trả về
+		BorrowBookDTO.BorrowedBookDetailDTO borrowedBookDetailDTO = new BorrowBookDTO.BorrowedBookDetailDTO();
+		borrowedBookDetailDTO.setBorrowID(savedBorrowBook.getBorrowID());
+		borrowedBookDetailDTO.setBookID(book.getBookId());
+		borrowedBookDetailDTO.setTitle(book.getTitle());
+		borrowedBookDetailDTO.setBorrowDate(savedBorrowBook.getBorrowDate());
+		borrowedBookDetailDTO.setDueDate(savedBorrowBook.getDueDate());
+
+		return borrowedBookDetailDTO;
 	}
 
 }

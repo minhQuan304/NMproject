@@ -1,6 +1,5 @@
 package com.example.NMproject.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,11 +21,5 @@ public interface BorrowBookRepository extends JpaRepository<BorrowBook, Long> {
 	@Modifying
 	@Query("DELETE FROM BorrowBook b WHERE b.borrowID = :borrowID")
 	void deleteByBorrowID(@Param("borrowID") Long borrowID);
-
-	@Modifying
-	@Query("INSERT INTO BorrowBook (account, book, borrowDate, dueDate) " + "SELECT a, b, :borrowDate, :dueDate "
-			+ "FROM AccountEntity a, Book b " + "WHERE a.userID = :userId AND b.bookId = :bookId")
-	void addBorrowedBook(@Param("userId") Long userId, @Param("bookId") Long bookId,
-			@Param("borrowDate") LocalDateTime borrowDate, @Param("dueDate") LocalDateTime dueDate);
 
 }

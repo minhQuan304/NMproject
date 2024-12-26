@@ -131,8 +131,8 @@ if (infoUser) {
         document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
         document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
         document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
-        document.getElementById('avt-in-profile').src = infoUser.imageLink;
-
+        document.getElementById('avt-in-profile').src = "http://localhost:8081/hinh_anh/avatar.jpg";
+        document.getElementById('userpic').src="http://localhost:8081/hinh_anh/avatar.jpg";
     });
     sessionStorage.setItem('infoUser', JSON.stringify(infoUser));
 };
@@ -226,7 +226,7 @@ function displayListBook(bookToDisplay){
                     <div class="book-item">
                         <div class="book-top">
                             <a href="#" class="book-picture" onclick="showDetailsBook(${book.bookID})">
-                                <img src="${book.imageLink}" alt="Ảnh bìa sách">
+                                <img src="http://localhost:8081/api/books${book.imageLink}" alt="Ảnh bìa sách">
                                 <button class="view-detail">
                                     <h2>${book.title}</h2>
                                     <div class="status-rate">
@@ -296,7 +296,7 @@ async function addDetailsByBookID(bookID){
                 let detailsOverView = bookDetails.querySelector(".details-overview");
                 detailsOverView.innerHTML = "";
                 let detailsBook = `
-                    <img src="${data.imageLink}" id="picture-book" alt="Ảnh bìa sách">
+                    <img src="http://localhost:8081/api/books${data.imageLink}" id="picture-book" alt="Ảnh bìa sách">
                     <h2>${data.title}</h2>
                     <h3 id="rate-count"> 
                         <ion-icon name="star" class="count-star"></ion-icon>
@@ -728,7 +728,7 @@ async function showInfoInCart(){
             const row = `
                     <tr data-boolean="0" data-id="${cart.bookID}" id="book-inCart-${cart.bookID}">
                         <td>${cart.bookID}</td>
-                        <td><img src="${cart.imageLink}" class="picture-book-inCart"></td>
+                        <td><img src="http://localhost:8081/api/books${cart.pathPicture}" class="picture-book-inCart"></td>
                         <td>${cart.title}</td>
                         <td>${cart.category}</td>
                         <td>

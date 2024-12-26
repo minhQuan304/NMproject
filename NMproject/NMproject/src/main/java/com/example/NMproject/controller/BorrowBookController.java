@@ -36,10 +36,16 @@ public class BorrowBookController {
 		return ResponseEntity.ok().body(Map.of("message", "Xóa sách mượn thành công với borrowID: " + borrowID));
 	}
 
-	@PostMapping("/addBorrowbook")
-	public ResponseEntity<?> addBorrowedBook(@RequestBody BorrowBookDTO borrowBookDTO) {
-		borrowBookService.addBorrowedBook(borrowBookDTO);
-		return ResponseEntity.ok().body(Map.of("message", "Thêm sách mượn thành công"));
+	// Ví dụ giả định controller của bạn
+	@PostMapping("/borrowBook")
+	public ResponseEntity<BorrowBookDTO.BorrowedBookDetailDTO> borrowBook(@RequestBody BorrowBookDTO borrowBookDTO) {
+		try {
+			// Gọi service để thêm sách mượn và trả về DTO
+			BorrowBookDTO.BorrowedBookDetailDTO borrowedBookDetailDTO = borrowBookService
+					.addBorrowedBook(borrowBookDTO);
+			return ResponseEntity.ok(borrowedBookDetailDTO);
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body(null); // Trả về lỗi nếu xảy ra vấn đề
+		}
 	}
-
 }

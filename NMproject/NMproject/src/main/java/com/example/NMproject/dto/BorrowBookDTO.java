@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class BorrowBookDTO {
-	private long userId; // ID người dùng
+	private long userID; // ID người dùng
 	private String username; // Tên người dùng
 	private List<BorrowedBookDetailDTO> borrowedBooks;
 
@@ -21,7 +21,7 @@ public class BorrowBookDTO {
 	}
 
 	// Thêm thông tin để gửi dữ liệu khi thêm sách mượn
-	private Long bookId; // Dành cho việc thêm sách mượn
+	private Long bookID; // Dành cho việc thêm sách mượn
 	private String title; // Dành cho việc thêm sách mượn
 	private LocalDateTime borrowDate; // Dành cho việc thêm sách mượn
 	private LocalDateTime dueDate; // Dành cho việc thêm sách mượn
