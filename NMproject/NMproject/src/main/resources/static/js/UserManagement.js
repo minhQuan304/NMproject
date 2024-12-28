@@ -156,9 +156,9 @@ async function addBorrowedBook(userID) {
         return;
     }
 	const currentDate = moment();
-    const borrowDate = currentDate.format("DD-MM-YYYY");
+    const borrowDate = currentDate.format("YYYY-MM-DD");
 	const futureDate = currentDate.add(30, 'days');
-	const dueDate = futureDate.format("DD-MM-YYYY");
+	const dueDate = futureDate.format("YYYY-MM-DD");
  // Ngày trả = Ngày mượn + 30 ngày
       
      // thêm đoạn này
@@ -171,10 +171,10 @@ async function addBorrowedBook(userID) {
 	console.log(dataToSendServer);
     try {
         // Lấy borrowID từ server
-        const response = await fetch(`${API}/borrowed-books`, {
+        const response = await fetch(`${API}/borrowed-books/addborrowBook`, {
 		method: 'POST',
 		headers: {'Content-Type':'application/json'},
-		body: JSON.stringfy(dataToSendServer)
+		body: JSON.stringify(dataToSendServer)
 	});
         if (!response.ok) {
             throw new Error(`Error! Status: ${response.status}`);

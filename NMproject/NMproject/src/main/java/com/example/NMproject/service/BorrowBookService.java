@@ -1,6 +1,6 @@
 package com.example.NMproject.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +40,8 @@ public class BorrowBookService {
 			borrowedBookDetailDTO.setBorrowID((Long) detail[0]); // borrowID
 			borrowedBookDetailDTO.setBookID((Long) detail[2]); // bookID
 			borrowedBookDetailDTO.setTitle((String) detail[3]); // Title
-			borrowedBookDetailDTO.setBorrowDate((LocalDateTime) detail[4]); // Borrow date
-			borrowedBookDetailDTO.setDueDate((LocalDateTime) detail[5]); // Due date
+			borrowedBookDetailDTO.setBorrowDate((LocalDate) detail[4]); // Borrow date
+			borrowedBookDetailDTO.setDueDate((LocalDate) detail[5]); // Due date
 			borrowedBooks.add(borrowedBookDetailDTO);
 		}
 		return borrowedBooks;

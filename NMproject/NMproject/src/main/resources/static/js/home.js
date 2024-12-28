@@ -177,7 +177,7 @@ updateProfileBtn.addEventListener("click", (e) => {
             phone: profilePhone.innerText
         }
         console.log(dataToSend);
-        fetch(`http://localhost:8081/api/users/update`, {
+        fetch(`http://localhost:8081/api/auth/update`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(dataToSend)
@@ -830,7 +830,7 @@ async function addItemToCart(bookID){
 // function add danh sách đang mượn vào bảng
 async function FetchDataBorrows(){
     try {
-        const response = await fetch(`http://localhost:8081/api/borrows/getAll/${infoUser.userID}`);
+        const response = await fetch(`http://localhost:8081/api/borrowed-books/user/${infoUser.userID}`);
         if(!response.ok) throw new Error(`Error! Status: ${response.status}`);
         const dataReceive = await response.json();
         dataReceive.forEach(data => {
@@ -839,7 +839,7 @@ async function FetchDataBorrows(){
             const row = `
                 <tr>
                     <td>${data.bookID}</td>
-                    <td><img src="${data.imageLink}" class="picture-book-borrow"></td>
+                    <td><img src="http://localhost:8081/api/books${data.imageLink}" class="picture-book-borrow"></td>
                     <td>${data.title}</td>
                     <td>${data.borrowDate}</td>
                     <td>${data.dueDate}</td>

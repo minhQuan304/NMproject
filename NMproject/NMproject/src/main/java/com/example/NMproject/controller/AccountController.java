@@ -23,8 +23,6 @@ import com.example.NMproject.dto.RegisterRequest;
 import com.example.NMproject.entity.AccountEntity;
 import com.example.NMproject.service.AccountService;
 
-import jakarta.servlet.http.HttpSession;
-
 @Controller
 @RequestMapping("/api/auth")
 public class AccountController {
@@ -39,20 +37,17 @@ public class AccountController {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody RegisterRequest request, HttpSession session) {
-		Optional<AccountEntity> user = userService.loginUser(request.getEmail(), request.getPassword());
-		return user.map(u -> {
+	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
+		Optional<AccountResponse> user = userService.loginUser(request.getEmail(), request.getPassword());
 
-			// Trả về trực tiếp các trường userID, username, và pathPicture
-			return ResponseEntity.ok(Map.of("message", "User login successfully", "userID", u.getUserID(), "username",
-					u.getUsername(), "pathPicture", u.getPathPicture() != null ? u.getPathPicture() : "null" // Xử lý
-																												// null
-			));
-		}).orElseGet(() -> {
-			// Trả về response nếu email hoặc mật khẩu sai
-			return ResponseEntity.status(401).body(Map.of("message", "Invalid email or password"));
-		});
+		return user
+				.map(u -> ResponseEntity.ok(Map.of("message", "User login successfully", "userID", u.getUserID(),
+						"username", u.getUsername(), "imageLink", u.getImageLink(), "name", u.getName(), "phone",
+						u.getPhone(), "address", u.getAddress(), "userRole", u.getUserRole()))) // Thêm userRole vào
+																								// phản hồi
+				.orElseGet(() -> ResponseEntity.status(401).body(Map.of("message", "Invalid email or password")));
 	}
+
 	// Đăng nhập người dùng bằng email và password
 //	@PostMapping("/login")
 //	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {

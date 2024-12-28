@@ -1,6 +1,6 @@
 package com.example.NMproject.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,10 +38,10 @@ public class BorrowBook {
 	private Book book;
 
 	@Column(name = "borrowDate")
-	private LocalDateTime borrowDate;
+	private LocalDate borrowDate; // Thay đổi từ LocalDateTime thành LocalDate
 
-	@Column(name = "dueDate") // Cột dueDate được thêm vào
-	private LocalDateTime dueDate;
+	@Column(name = "dueDate")
+	private LocalDate dueDate; // Thay đổi từ LocalDateTime thành LocalDate
 
 	// Getter for username từ AccountEntity
 	public String getUsername() {

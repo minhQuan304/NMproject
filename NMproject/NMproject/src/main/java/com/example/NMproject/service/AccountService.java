@@ -18,8 +18,10 @@ public class AccountService {
 	private AccountRepository accountRepository;
 
 	// Đăng nhập người dùng bằng email và password
-	public Optional<AccountEntity> loginUser(String email, String password) {
-		return accountRepository.findByEmailAndPassword(email, password);
+	public Optional<AccountResponse> loginUser(String email, String password) {
+		return accountRepository.findByEmailAndPassword(email, password)
+				.map(user -> new AccountResponse(user.getUserID(), user.getUsername(), user.getEmail(), user.getName(),
+						user.getPhone(), user.getAddress(), user.getUserRole()));
 	}
 
 	// Đăng ký người dùng mới bằng email, username và password
@@ -58,6 +60,7 @@ public class AccountService {
 			account.setName(name);
 			account.setPhone(phone);
 			account.setAddress(address);
+			account.setUserRole(userID);
 			// Cập nhật thời gian cập nhật
 			account.setUpdateAt(LocalDateTime.now());
 			return accountRepository.save(account); // Lưu lại thông tin đã được cập nhật

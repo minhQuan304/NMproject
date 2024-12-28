@@ -37,7 +37,7 @@ public class BorrowBookController {
 	}
 
 	// Ví dụ giả định controller của bạn
-	@PostMapping("/borrowBook")
+	@PostMapping("/addborrowBook")
 	public ResponseEntity<BorrowBookDTO.BorrowedBookDetailDTO> borrowBook(@RequestBody BorrowBookDTO borrowBookDTO) {
 		try {
 			// Gọi service để thêm sách mượn và trả về DTO
