@@ -16,6 +16,7 @@ public class AccountResponse {
 	private String address;
 	private String imageLink = "/hinh_anh/avatar.jpg"; // Đặt giá trị mặc định cho avatarUrl
 	private long userRole; // Thêm userRole vào
+	private long status;
 
 	// Constructor không có avatarUrl và userRole
 	public AccountResponse(long userID, String email, String username) {

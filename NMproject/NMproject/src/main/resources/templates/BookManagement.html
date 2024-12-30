@@ -21,378 +21,316 @@
     />
 
     <style>
-      /* navbar */
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap");
+      @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+:root {
+    --first-color: black;
+    --second-color: #F5A623;
+    --white-color: #ededed;
 
-      :root {
-        --first-color: black;
-        --second-color: #f5a623;
-        --white-color: #ededed;
+    --body-font: 'Open Sans', sans-serif;
+}
 
-        --body-font: "Poppins", sans-serif;
-        --small-font-size: 0.875rem;
+:root {
+    --z-back: -10;
+    --z-normal: 1;
+    --z-tooltrip: 10;
+    --z-fixed: 100;
+    --z-modal: 1000;
+}
 
-        @media screen and (min-width: 768px) {
-          --small-font-size: 0.638rem;
-        }
-      }
+*,
+::before,
+::after {
+    box-sizing: border-box;
+}
 
-      :root {
-        --z-back: -10;
-        --z-normal: 1;
-        --z-tooltrip: 10;
-        --z-fixed: 100;
-        --z-modal: 1000;
-      }
+body {
+    position: relative;
+    margin: 0.5rem;
+    padding: 1rem 0 0 16rem;
+    padding-left: 228px;
+    font-family: var(--body-font);
+    min-height: 100vh;
+    background: var(--white-color);
+    transition: 0.5s
+}
 
-      *,
-      ::before,
-      ::after {
-        box-sizing: border-box;
-      }
+ul,
+li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-      body {
-        position: relative;
-        margin: 0.5rem;
-        padding: 1rem 0 0 16rem;
-        padding-left: 228px;
-        font-family: var(--body-font);
-        min-height: 100vh;
-        background: var(--white-color);
-        transition: 0.5s;
-      }
+}
 
-      h1 {
-        margin: 0;
-      }
+a {
+    text-decoration: none;
+}
+/* thanh navbar */
+.l-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 58px;
+    height: 100vh;
+    background: black;
+    padding: 1.25rem 0.5rem 2rem;
+    transition: 0.5s;
+    z-index: var(--z-modal);
+}
 
-      ul,
-      li {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
+.nav {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-      a {
-        text-decoration: none;
-      }
+.nav_logo {
+    position: relative;
+    top: 20px;
+    right: -10px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 0.1rem;
+}
 
-      .l-navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 58px;
-        height: 100vh;
-        background: black;
-        padding: 1.25rem 0.5rem 2rem;
-        transition: 0.5s;
-        z-index: var(--z-fixed);
-      }
+.nav-logo-icon {
+    margin-right: 1.2rem;
+    width: 30px;
+    height: 30px;
+    color: #b2cb40;
+}
 
-      .nav {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+.nav_logo-text {
+    font-size: 1.4rem;
+    color: #b2cb40;
+    font-weight: 700;
+}
 
-      .nav_logo {
-        position: relative;
-        top: 20px;
-        right: -10px;
-        display: flex;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 0 0.1rem;
-      }
+.nav_toggle {
+    position: absolute;
+    top: 2rem;
+    right: -0.5rem;
+    width: 18px;
+    height: 18px;
+    background: var(--second-color);
+    border-radius: 50%;
+    font-size: 200%;
+    color: var(--first-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.5s;
+}
 
-      .nav-logo-icon {
-        margin-right: 1.2rem;
-        width: 30px;
-        height: 30px;
-        color: #b2cb40;
-      }
+.nav_link {
+    position: relative;
+    top: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 1.2rem;
+    border-radius: 0.5rem;
+    color: var(--white-color);
+    transition: 0.5s;
+}
 
-      .nav_logo-text {
-        font-size: 1.4rem;
-        color: #b2cb40;
-        font-weight: 700;
-      }
+.nav_link:hover {
+    background: var(--second-color);
+    color: var(--first-color);
+}
 
-      .nav_toggle {
-        position: absolute;
-        top: 2rem;
-        right: -0.5rem;
-        width: 18px;
-        height: 18px;
-        background: var(--second-color);
-        border-radius: 50%;
-        font-size: 200%;
-        color: var(--first-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: 0.5s;
-      }
+.nav_icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    
+}
 
-      .nav_link {
-        position: relative;
-        top: 40px;
-        display: flex;
-        align-items: center;
-        padding: 0.5rem;
-        margin-bottom: 1.2rem;
-        border-radius: 0.5rem;
-        color: var(--white-color);
-        transition: 0.5s;
-      }
+.nav_text {
+    font-weight: 550;
+}
 
-      .nav_link:hover {
-        background: var(--second-color);
-        color: var(--first-color);
-      }
+#logout {
+    position: relative;
+    top: -5px;
+}
 
-      .nav_icon {
-        font-size: 1.5rem;
-        margin-right: 0.5rem;
-      }
+.show {
+    width: 228px;
+}
 
-      .nav_text {
-        font-weight: 550;
-      }
+.l-navbar:not(.show) .nav_text {
+    display: none;
+}
 
-      #logout {
-        position: relative;
-        top: -5px;
-      }
+.l-navbar:not(.show) .nav_logo-text {
+    display: none;
+}
 
-      .show {
-        width: 228px;
-      }
+.rotate {
+    transform: rotate(180deg);
+    transition: 0.2s;
+}
+/* mở rộng trang => nội dung kéo giãn theo */
+.expander {
+    padding: 1rem 0 0 5rem;
+    padding-left: 58x;
+}
 
-      .l-navbar:not(.show) .nav_text {
-        display: none;
-      }
+.active {
+    background: var(--second-color);
+    color: var(--first-color);
+    transition: 0.3s;
+}
+/* drop menu profile */
 
-      .l-navbar:not(.show) .nav_logo-text {
-        display: none;
-      }
+.user-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #333;
+}
 
-      .rotate {
-        transform: rotate(180deg);
-        transition: 0.2s;
-      }
+.noti-icon, #cart-icon {
+    font-size: 150%;
+    cursor: pointer;
+    color: var(--white-color);
+}
 
-      .expander {
-        padding: 1rem 0 0 5rem;
-        padding-left: 58x;
-      }
+.menu-profile {
+    width: 100%;
+    background-color: black;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    z-index: 201;
+}
 
-      .active {
-        background: var(--second-color);
-        color: var(--first-color);
-        transition: 0.3s;
-      }
+.menu-profile-icon {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-      .user-pic {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-      }
 
-      .noti-icon {
-        font-size: 150%;
-        cursor: pointer;
-        color: #12192c;
-      }
+.user-pic-in {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 
-      .menu-profile {
-        position: fixed;
-        top: 10px;
-        right: 20px;
-        display: flex;
-        justify-content: flex-end;
-        padding: 10px;
-      }
+.drop-menu-profile {
+    position: fixed;
+    top: 30px;
+    right: 45px;
+    background-color: var(--first-color);
+    border: 1px solid #444;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    overflow: hidden;
+    flex-direction: column;
+    z-index: var(--z-modal);
+    transform: scale(0);
+    transition: transform .5s ease, height .2s ease;
 
-      .menu-profile-icon {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
+}
 
-      .user-pic-in {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-      }
+.drop-menu-profile.active {
+    transform: scale(1);
+}
 
-      .drop-menu-profile {
-        position: fixed;
-        top: 30px;
-        right: 45px;
-        background-color: var(--first-color);
-        border: 1px solid #444;
-        border-radius: 5px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        width: 200px;
-        overflow: hidden;
-        flex-direction: column;
-        z-index: var(--z-modal);
-        transform: scale(0);
-        transition: transform 0.5s ease, height 0.2s ease;
-      }
+.drop-menu-profile a {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+}
 
-      .drop-menu-profile.active {
-        transform: scale(1);
-      }
+.drop-menu-profile a:hover {
+    background-color: var(--second-color);
+    color: var(--first-color);
+}
 
-      .drop-menu-profile a {
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        color: #fff;
-        text-decoration: none;
-      }
+.drop-menu-profile a ion-icon {
+    margin-right: 8px;
+}
 
-      .drop-menu-profile a:hover {
-        background-color: var(--second-color);
-        color: var(--first-color);
-      }
-
-      .drop-menu-profile a ion-icon {
-        margin-right: 8px;
-      }
-
-      .drop-menu-profile a .user-pic-in {
-        margin-right: 8px;
-      }
-
-      /* end-navbar */
-      .modal-backdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        padding-top: 100px;
-        z-index: 1000;
-      }
-
-      .modal-content {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 500px;
-        max-width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-      }
-
-      .hidden {
-        display: none !important;
-      }
-
-      .table-container {
-        margin-top: 2rem;
-      }
-
-      .dropdown {
-        position: relative;
-        display: inline-block;
-      }
-
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        right: 0;
-        background-color: white;
-        min-width: 160px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        border-radius: 0.5rem;
-        z-index: 1;
-      }
-
-      .dropdown-content a {
-        color: #4a5568;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        transition: all 0.3s;
-      }
-
-      .dropdown-content a:hover {
-        background-color: #f8f9fa;
-        color: #1a202c;
-      }
-
-      .show {
-        display: block;
-      }
+.drop-menu-profile a .user-pic-in {
+    margin-right: 8px;
+}
+      
     </style>
   </head>
-  <body class="bg-gray-100 p-6">
+  <body id="body" class="bg-gray-100 p-6">
     <!-- Navbar -->
-    <div class="grid grid-cols-8">
-      <div class="l-navbar show" id="navbar">
+    <div class="l-navbar show" id="navbar">
         <div class="nav">
-          <div>
-            <a href="#" class="nav_logo">
-              <ion-icon name="library" class="nav-logo-icon"></ion-icon>
-              <span class="nav_logo-text">LM Systems</span>
-            </a>
-            <div class="nav_toggle" id="nav_toggle">
-              <ion-icon name="chevron-back-outline"></ion-icon>
+            <div>
+                <a href="#" class="nav_logo">
+                    <ion-icon name="library" class="nav-logo-icon"></ion-icon>
+                    <span class="nav_logo-text">LM Systems</span>
+                </a>
+                <div class="nav_toggle" id="nav_toggle">
+                    <ion-icon name="chevron-back-outline" title="Thu gọn"></ion-icon>
+                </div>
+                <ul class="nav_list">
+                    <a href="http://localhost:8081/api/home/home" class="nav_link">
+                        <ion-icon name="home" class="nav_icon" title="Trang chủ"></ion-icon>
+                        <span class="nav_text">Trang chủ</span>
+                    </a>
+                    <a href="#" class="nav_link active">
+                        <ion-icon name="book" class="nav_icon" title="Quản lý sách"></ion-icon>
+                        <span class="nav_text">Quản lý sách</span>
+                    </a>
+                    <a href="http://localhost:8081/api/home/UserManagement" class="nav_link">
+                        <ion-icon name="people" class="nav_icon" title="Quản lý người dùng"></ion-icon>
+                        <span class="nav_text">Quản lý người dùng</span>
+                    </a>
+                </ul>
             </div>
-            <ul class="nav_list">
-              <a href="http://localhost:8081/api/home/home" class="nav_link">
-                <ion-icon name="home" class="nav_icon"></ion-icon>
-                <span class="nav_text">Trang chủ</span>
-              </a>
-              <!-- a -->
-              <!-- <a href="#" class="nav_link"  onclick="loadBookManagement() ">
-              <ion-icon name="book" class="nav_icon"></ion-icon>
-              <span class="nav_text">Book Management</span>
-            </a> -->
-
-              <a
-                href="../BookManagement/BookManagement.html"
-                class="nav_link active"
-              >
-                <ion-icon name="book" class="nav_icon"></ion-icon>
-                <span class="nav_text">Quản lý sách</span>
-              </a>
-
-              <a href="#" class="nav_link">
-                <ion-icon name="people" class="nav_icon"></ion-icon>
-                <span class="nav_text">Quản lý người dùng</span>
-              </a>
-
-
-            <!--   <a href="../Report/Report.html" class="nav_link">
-                <ion-icon name="create" class="nav_icon"></ion-icon>
-                <span class="nav_text">Report & Analytics</span>
-              </a> -->
-              
-            </ul>
-          </div>
-          <div>
-            <a href="./loginRegister.html" class="nav_link" id="logout">
-              <ion-icon name="log-out" class="nav_icon"></ion-icon>
-              <span class="nav_text">Logout</span>
-            </a>
-          </div>
+            <div>
+                <a href="./loginRegister.html" class="nav_link" id="logout">
+                    <ion-icon name="log-out" class="nav_icon" title="Đăng xuất"></ion-icon>
+                    <span class="nav_text">Đăng xuất</span>
+                </a>
+            </div>
         </div>
-      </div>
+    </div>
+    <!-- Dropdown menu profile -->
+    <ion-icon name="arrow-back-circle" id="arrow-back-icon" title="Quay lại"></ion-icon>
+    <div class="menu-profile">
+        
+        <div class="menu-profile-icon">
+            <img src="\Assets\user0.png" class="user-pic" id="userpic" title="Thông tin tài khoản">
+        </div>
+        <div class="drop-menu-profile" id="drop-menu-profile">
+            <a id="username" href="#"> <img src="\Assets\user0.png" class="user-pic-in">Username0 </a>
+            <a href="#" id="profile-icon">
+                <ion-icon name="person"></ion-icon> Thông tin cá nhân
+            </a>
+            <a href="#" id="text-view-list-borrow">
+                <ion-icon name="book"></ion-icon> Danh sách mượn
+            </a>
+            <a href="#">
+                <ion-icon name="help-circle"></ion-icon> Hỗ trợ: 0329876604
+            </a>
+            <a href="#">
+                <ion-icon name="swap-horizontal"></ion-icon> Chuyển tài khoản
+            </a>
+        </div>
+    </div>
       <div class="bg-gray-100 p-6 col-start-2 col-span-7">
         <div
           class="bg-white rounded-lg shadow-md overflow-hidden table-container"
@@ -794,7 +732,7 @@
               type="submit"
               class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 flex items-center space-x-2"
             >
-              <i class="fa fa-edit text-white">Cập nhật</i>
+              <i class=" text-white">Cập nhật</i>
             </button>
           </div>
         </form>

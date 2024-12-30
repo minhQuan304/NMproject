@@ -3,6 +3,7 @@
 // console.log(currentDate)
 // const borrowDate = currentDate.format("DD-MM-YYYY");
 // console.log(borrowDate);
+
 const body = document.getElementById("body");
 window.onload = function() {
     const notification = document.getElementById('notification');
@@ -100,15 +101,6 @@ const showMenu = (toggleId, navbarId, bodyId) => {
     }
 };
 showMenu('nav_toggle', 'navbar', 'body');
-
-// color hover of navbar
-const linkColor = document.querySelectorAll('.nav_link');
-function colorLink() {
-    linkColor.forEach(link => link.classList.remove('active'));
-    this.classList.add('active');
-}
-linkColor.forEach(link => link.addEventListener('click', colorLink));
-
 // dropdown menu profile
 const dropDownProfile = (menuId, userpicId) => {
     const userpic = document.getElementById(userpicId),
@@ -129,17 +121,36 @@ dropDownProfile('drop-menu-profile', 'userpic');
 
 // set username from sessionStorage
 const infoUser = JSON.parse(sessionStorage.getItem('infoUser'));
+console.log(infoUser);
 if (infoUser) {
     document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('username').textContent = infoUser.username;
+        const imgElement = `
+            <img src="http://localhost:8081${infoUser.imageLink}" class="user-pic-in">${infoUser.username}
+        `
+        document.getElementById('username').innerHTML = imgElement;
         document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
         document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
         document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
-        document.getElementById('avt-in-profile').src =`http://localhost:8081/hinh_anh/avatar.jpg`;
-		document.getElementById('userpic').src=`http://localhost:8081/hinh_anh/avatar.jpg`;
-		document.getElementById('user-pic-cmt').src = `http://localhost:8081/hinh_anh/avatar.jpg`;
+        document.getElementById('avt-in-profile').src =`http://localhost:8081${infoUser.imageLink}`;
+        document.getElementById('user-pic-cmt').src = `http://localhost:8081${infoUser.imageLink}`;
+        document.getElementById('userpic').src = `http://localhost:8081${infoUser.imageLink}`;
+        
     });
-    sessionStorage.setItem('infoUser', JSON.stringify(infoUser));
+};
+function checkRoleUM(){
+	console.log(infoUser.userRole)
+    if(infoUser.userRole === 1){
+        window.location.href = 'http://localhost:8081/api/home/UserManagement';
+    } else {
+        notification("Bạn không có quyền truy cập vào đây!", false);
+    }
+};
+function checkRoleBM(){
+    if(infoUser.userRole === 1){
+        window.location.href = 'http://localhost:8081/api/home/BookManagement';
+    } else {
+        notification("Bạn không có quyền truy cập vào đây!", false);
+    }
 };
 // update profile
 const updateProfileBtn = document.getElementById("update-profile");
@@ -408,9 +419,11 @@ async function addDetailsByBookID(bookID){
                 } else {
                     console.log(456)
                     const rateOfBook = rateOfUser.find(r => r.bookID === bookID);
+                    console.log(rateOfBook)
                     let starToFillColor = 0;
                     if(rateOfBook){
                         starToFillColor = parseInt(rateOfBook.rate);
+                        console.log(starToFillColor);
                         for (let i = 0; i < starToFillColor; i++){
                             stars[i].style.color = `yellow`;
                         };
@@ -488,7 +501,7 @@ async function addContentCmtByBookID(bookID){
                 <li id="cmt-id-${comment.commentID}">
                      <div class="area-content-cmt">
                         <span class="avatar">
-                            <img class="user-pic-cmt" src="http://localhost:8081/hinh_anh/avatar.jpg">
+                            <img class="user-pic-cmt" src="http://localhost:8081${comment.imageLink}">
                         </span>
                         <div class="cmt-content">
                             <p class="usernameF" data-id="${comment.userID}">${comment.username}
@@ -563,7 +576,7 @@ async function postComment(){
         newComment.innerHTML = `
                  <div class="area-content-cmt">
                      <span class="avatar">
-                        <img class="user-pic-cmt" src="http://localhost:8081/api/books${infoUser.imageLink} || '/Assets/user0.png">
+                        <img class="user-pic-cmt" src="http://localhost:8081${infoUser.imageLink}">
                     </span>
                     <div class="cmt-content">
                         <p class="usernameF" data-id="${infoUser.userID}">${infoUser.username}

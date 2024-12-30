@@ -29,6 +29,7 @@ public class AccountEntity {
 	private LocalDate createAt;
 	private LocalDate updateAt;
 	private long userRole;
+	private long status;
 
 	public AccountEntity(String email, String username, String password) {
 		this.email = email;

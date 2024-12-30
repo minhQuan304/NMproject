@@ -2,6 +2,84 @@
 window.initializeUI = initializeUI;
 window.fetchBooks = fetchBooks;
 window.updateTableDisplay = updateTableDisplay;
+const body = document.getElementById("body");
+function notification(content, isSuccess){
+    const notification = document.getElementById('notification');
+    if(isSuccess){
+        notification.innerHTML = `
+            <ion-icon name="checkmark-outline"></ion-icon> ${content}
+        `;
+        notification.style.backgroundColor = `#41eea0`;
+        notification.style.color = 'black';
+    } else {
+        notification.innerHTML = `
+            <ion-icon name="alert-circle-outline"></ion-icon> ${content}
+        `;
+        notification.style.backgroundColor = `red`;
+        notification.style.color = '#ededed';
+    }
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 0);
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3500); 
+}
+// show/hidden
+const showMenu = (toggleId, navbarId, bodyId) => {
+    const toggle = document.getElementById(toggleId),
+        navbar = document.getElementById(navbarId),
+        bodypadding = document.getElementById(bodyId);
+    if (toggle && navbar) {
+        toggle.addEventListener('click', () => {
+            navbar.classList.toggle('show');
+            toggle.classList.toggle('rotate');
+            bodypadding.classList.toggle('expander')
+        });
+    }
+};
+showMenu('nav_toggle', 'navbar', 'body');
+// color hover of navbar
+const linkColor = document.querySelectorAll('.nav_link');
+function colorLink() {
+    linkColor.forEach(link => link.classList.remove('active'));
+    this.classList.add('active');
+}
+linkColor.forEach(link => link.addEventListener('click', colorLink));
+// dropdown menu profile
+const dropDownProfile = (menuId, userpicId) => {
+    const userpic = document.getElementById(userpicId),
+        menuProfile = document.getElementById(menuId);
+    if (userpic && menuProfile) {
+        userpic.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menuProfile.classList.toggle('active');
+        });
+        window.addEventListener('click', (e) => {
+            if (!menuProfile.contains(e.target) && !userpic.contains(e.target)) {
+                menuProfile.classList.remove('active');
+            }
+        });
+    }
+};
+dropDownProfile('drop-menu-profile', 'userpic');
+
+// set username from sessionStorage
+const infoUser = JSON.parse(sessionStorage.getItem('infoUser'));
+console.log(infoUser);
+if (infoUser) {
+    document.addEventListener('DOMContentLoaded', () => {
+        const imgElement = `
+            <img src="http://localhost:8081${infoUser.imageLink}" class="user-pic-in">${infoUser.username}
+        `
+        document.getElementById('username').innerHTML = imgElement;
+        // document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
+        // document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
+        // document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
+        // document.getElementById('avt-in-profile').src = infoUser.imageLink || "/Assets/user0.png";
+
+    });
+};
 
 // Thêm event listener khi trang được load
 document.addEventListener("DOMContentLoaded", function () {
@@ -390,7 +468,7 @@ function showUpdateModal(id) {
 
       // Hiển thị ảnh hiện tại
       const currentImage = document.getElementById("currentBookImage");
-      currentImage.src = book.imageLink || "/Assets/default-book.png";
+      currentImage.src = `${API_URL}${book.imageLink}`;
 
       showModal("updateModal");
     })

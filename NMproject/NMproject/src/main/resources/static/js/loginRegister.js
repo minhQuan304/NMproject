@@ -54,11 +54,13 @@ async function handleLogin(event) {
                 imageLink: data.imageLink,
                 name: data.name,
                 address: data.address,
-                phone: data.phone
+                phone: data.phone,
+				userRole: data.userRole
             }
+			console.log(infoUser)
             sessionStorage.setItem("isLogin", true);
             sessionStorage.setItem("infoUser", JSON.stringify(infoUser));
-            window.location.href = "http://localhost:8081/api/home/home";
+           window.location.href = "http://localhost:8081/api/home/home";
         }
     } catch (error) {
         console.error('Error:', error);

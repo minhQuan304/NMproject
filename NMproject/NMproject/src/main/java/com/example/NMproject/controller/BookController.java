@@ -142,49 +142,50 @@ public class BookController {
 //	}
 	@PutMapping("/update/{id}")
 	public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestParam("bookDTO") String bookJson,
-			@RequestParam(value = "file", required = false) MultipartFile file) {
-		try {
-			// Chuyển đổi bookJson thành đối tượng BookDTO
-			ObjectMapper objectMapper = new ObjectMapper();
-			BookDTO bookDTO = objectMapper.readValue(bookJson, BookDTO.class);
+	                                          @RequestParam(value = "file", required = false) MultipartFile file) {
+	    try {
+	        // Chuyển đổi bookJson thành đối tượng BookDTO
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        BookDTO bookDTO = objectMapper.readValue(bookJson, BookDTO.class);
 
-			// Lấy thông tin sách hiện tại từ cơ sở dữ liệu
-			BookDTO existingBook = bookService.getBookById(id);
+	        // Lấy thông tin sách hiện tại từ cơ sở dữ liệu
+	        BookDTO existingBook = bookService.getBookById(id);
 
-			// Cập nhật các thông tin sách từ BookDTO
-			existingBook.setTitle(bookDTO.getTitle());
-			existingBook.setCategory(bookDTO.getCategory());
-			existingBook.setAuthor(bookDTO.getAuthor());
-			existingBook.setPublishDate(bookDTO.getPublishDate());
-			existingBook.setDescription(bookDTO.getDescription());
-			existingBook.setQuantityTotal(bookDTO.getQuantityTotal());
-			existingBook.setQuantityValid(bookDTO.getQuantityValid());
-			existingBook.setRate(bookDTO.getRate());
+	        // Cập nhật các thông tin sách từ BookDTO
+	        existingBook.setTitle(bookDTO.getTitle());
+	        existingBook.setCategory(bookDTO.getCategory());
+	        existingBook.setAuthor(bookDTO.getAuthor());
+	        existingBook.setPublishDate(bookDTO.getPublishDate());
+	        existingBook.setDescription(bookDTO.getDescription());
+	        existingBook.setQuantityTotal(bookDTO.getQuantityTotal());
+	        existingBook.setQuantityValid(bookDTO.getQuantityValid());
+	        existingBook.setRate(bookDTO.getRate());
 
-			// Xử lý file ảnh sách nếu có, nếu không có ảnh thì giữ lại đường dẫn cũ
-			if (file != null && !file.isEmpty()) {
-				String imageFileName = StringUtils.cleanPath(file.getOriginalFilename());
-				Path imagePath = Paths.get("src/main/resources/static/hinh_anh/anh_sach/" + imageFileName);
-				Files.copy(file.getInputStream(), imagePath);
+	        // Xử lý file ảnh sách nếu có, nếu không có ảnh thì giữ lại đường dẫn cũ
+	        if (file != null && !file.isEmpty()) {
+	            String imageFileName = StringUtils.cleanPath(file.getOriginalFilename());
+	            Path imagePath = Paths.get("src/main/resources/static/hinh_anh/anh_sach/" + imageFileName);
+	            Files.copy(file.getInputStream(), imagePath);
 
-				// Cập nhật đường dẫn ảnh mới vào đối tượng BookDTO
-				existingBook.setImageLink("/image/" + imageFileName);
-			} else {
-				// Nếu không có ảnh mới, giữ lại đường link cũ của ảnh
-				existingBook.setImageLink(existingBook.getImageLink());
-			}
+	            // Cập nhật đường dẫn ảnh mới vào đối tượng BookDTO
+	            existingBook.setImageLink("/image/" + imageFileName);
+	        } else {
+	            // Nếu không có ảnh mới, giữ lại đường link cũ của ảnh
+	            existingBook.setImageLink(existingBook.getImageLink());
+	        }
 
-			// Cập nhật sách trong cơ sở dữ liệu
-			bookService.updateBook(id, existingBook);
+	        // Cập nhật sách trong cơ sở dữ liệu
+	        bookService.updateBook(id, existingBook);
 
-			// Trả về thông tin sách đã được cập nhật
-			return ResponseEntity.ok(existingBook);
+	        // Trả về thông tin sách đã được cập nhật
+	        return ResponseEntity.ok(existingBook);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	    }
 	}
+
 
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<BookDTO> deleteBookById(@PathVariable Long id) {
