@@ -34,7 +34,6 @@ public class CommentService {
 			CommentDTO dto = new CommentDTO();
 			dto.setCommentID(comment.getCommentID()); // Đổi thành commentID mới
 			dto.setUsername(user.getUsername()); // Đổi thành username mới
-			dto.setPathPicture(user.getPathPicture()); // Đổi thành pathPicture mới
 			dto.setComment(comment.getContent()); // Đổi từ content thành comment
 			dto.setLastUpdate(comment.getLastUpdate()); // Đổi từ updateAt thành lastUpdate
 			dto.setBookID(bookID); // Đặt bookID vào CommentDTO

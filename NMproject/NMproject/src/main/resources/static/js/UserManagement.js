@@ -31,12 +31,12 @@ function removeBorrowedBook(userID,borrowID, dueDate) {
     if (!confirm("Bạn có chắc chắn muốn trả cuốn sách này không?")) return;
 
     // Tính toán số ngày trễ hạn
-    const currentDate = new Date();
-    const dueDateObj = new Date(dueDate);
-    let lateDays = Math.ceil((currentDate - dueDateObj) / (1000 * 60 * 60 * 24)); // Đổi ms sang ngày
-
-    if (lateDays > 0) {
-        alert(`Số ngày trễ hạn: ${lateDays} ngày.`);
+	const currentDate = moment();
+	const dueDateMoment = moment(dueDate, "YYYY-MM-DD");
+	const lateOrEarly = dueDateMoment.diff(currentDate, "days");
+	 
+    if (lateOrEarly > 0) {
+        alert(`Số ngày trễ hạn: ${lateOrEarly} ngày.`);
     } else {
         alert("Trả sách đúng hạn. Cảm ơn bạn!");
     }

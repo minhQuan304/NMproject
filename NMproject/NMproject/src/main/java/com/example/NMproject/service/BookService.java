@@ -41,7 +41,6 @@ public class BookService {
 		book.setDescription(bookDTO.getDescription());
 		book.setQuantityTotal(bookDTO.getQuantityTotal());
 		book.setQuantityValid(bookDTO.getQuantityValid());
-		book.setRate(bookDTO.getRate());
 
 		bookRepository.save(book);
 		return convertToDTO(book);
@@ -59,8 +58,9 @@ public class BookService {
 		existingBook.setDescription(bookDTO.getDescription());
 		existingBook.setQuantityTotal(bookDTO.getQuantityTotal());
 		existingBook.setQuantityValid(bookDTO.getQuantityValid());
-		existingBook.setRate(bookDTO.getRate());
-
+		if (bookDTO.getImageLink() != null) {
+			existingBook.setImageLink(bookDTO.getImageLink());
+		}
 		bookRepository.save(existingBook);
 		return convertToDTO(existingBook);
 	}

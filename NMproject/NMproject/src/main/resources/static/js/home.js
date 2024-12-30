@@ -1,4 +1,8 @@
 // noti-login
+// const currentDate = moment();
+// console.log(currentDate)
+// const borrowDate = currentDate.format("DD-MM-YYYY");
+// console.log(borrowDate);
 const body = document.getElementById("body");
 window.onload = function() {
     const notification = document.getElementById('notification');
@@ -131,8 +135,9 @@ if (infoUser) {
         document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
         document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
         document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
-        document.getElementById('avt-in-profile').src = "http://localhost:8081/hinh_anh/avatar.jpg";
-        document.getElementById('userpic').src="http://localhost:8081/hinh_anh/avatar.jpg";
+        document.getElementById('avt-in-profile').src =`http://localhost:8081/hinh_anh/avatar.jpg`;
+		document.getElementById('userpic').src=`http://localhost:8081/hinh_anh/avatar.jpg`;
+		document.getElementById('user-pic-cmt').src = `http://localhost:8081/hinh_anh/avatar.jpg`;
     });
     sessionStorage.setItem('infoUser', JSON.stringify(infoUser));
 };
@@ -177,7 +182,7 @@ updateProfileBtn.addEventListener("click", (e) => {
             phone: profilePhone.innerText
         }
         console.log(dataToSend);
-        fetch(`http://localhost:8081/api/auth/update`, {
+        fetch(`http://localhost:8081/api/users/update`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(dataToSend)
@@ -208,6 +213,28 @@ async function fetchDataBooks() {
             throw new Error(`Error: ${response.status}`);
         };
         const data = await response.json();
+        const category = data.map(book => book.category);
+        const categoryUnique = [...new Set(category)];
+        const optionCategory = document.getElementById('option-category');
+        optionCategory.innerHTML = "";
+        categoryUnique.forEach(category => {
+            const element = `
+                <div class = "category-name">${category}</div>
+            `;
+            optionCategory.innerHTML += element;
+        });
+        sessionStorage.setItem("categoryUnique", JSON.stringify(categoryUnique));
+        const author = data.map(book => book.author);
+        const authorUnique = [...new Set(author)];
+        const optionAuthor = document.getElementById('option-author');
+        optionAuthor.innerHTML = "";
+        authorUnique.forEach(author => {
+            const element = `
+                <div class = "author-name">${author}</div>
+            `;
+            optionAuthor.innerHTML += element;
+        });
+        sessionStorage.setItem("authorUnique", JSON.stringify(authorUnique));
         displayListBook(data);
     } catch(error){
         console.error(error);
@@ -220,33 +247,32 @@ function displayListBook(bookToDisplay){
         listBook.innerHTML = "";
         bookToDisplay.forEach(book => {
             let quantityBookBorrowed = book.quantityTotal - book.quantityValid;
-            console.log(book.rate)
             const infoBook = `
                 <li>
                     <div class="book-item">
                         <div class="book-top">
-                            <a href="#" class="book-picture" onclick="showDetailsBook(${book.bookID})">
+                            <a href="#" class="book-picture" onclick="showDetailsBook(${book.bookID}, event)">
                                 <img src="http://localhost:8081/api/books${book.imageLink}" alt="Ảnh bìa sách">
                                 <button class="view-detail">
                                     <h2>${book.title}</h2>
                                     <div class="status-rate">
-                                        <li class="status-book">Status: Còn</li>
-                                        <li class="rate-book">Rate: ${parseFloat(book.rate)} 
+                                        <li class="status-book" id="status-of-book-${book.bookID}">Trạng thái: Còn</li>
+                                        <li class="rate-book" id="rate-book-${book.bookID}">Đánh giá: ${parseFloat(book.rate)} 
                                             <ion-icon name="star" class="icon-star"></ion-icon>
                                         </li>
                                     </div>
                                     <p class="content-preview"><b>Mô tả: </b>${book.description}</p>
-                                    <p><b>ID: </b>${book.bookID}</p>
+                                    <p><b>Mã sách: </b>${book.bookID}</p>
                                     <p><b>Thể loại: </b>${book.category}</p>
                                     <p><b>Tác giả: </b>${book.author}</p>
                                     <p><b>Bình luận:</b> ... (Click để xem chi tiết)</p>
                                 </button> 
                             </a>
-                            <span id="category">${book.category}</span>
+                            <div id="category">${book.category}</div>
                         </div>
                         <div class="book-info">
-                            <h2>${book.title}</h3>
-                            <p>Tác giả: ${book.author} </p>
+                            <h3 class="book-info-title">${book.title}</h3>
+                            <p class="author">Tác giả: ${book.author} </p>
                             <p>Đã mượn: ${quantityBookBorrowed}</p>
                             <p>Còn: ${book.quantityValid}</p>
                         </div>
@@ -258,13 +284,22 @@ function displayListBook(bookToDisplay){
                 
                 </li>
             `;
-                listBook.innerHTML += infoBook;
+            listBook.innerHTML += infoBook;
+            if(book.quantityValid === 0){
+                const statusOfBook = document.getElementById(`status-of-book-${book.bookID}`);
+                statusOfBook.innerText = 'Trạng thái: Hết';
+                statusOfBook.style.color = 'red';
+            }
         });
 };
 // function show details book
-function showDetailsBook(bookID) {
+function showDetailsBook(bookID, e) {
+    e.preventDefault();
+    document.getElementById("title-details-book").style.display = 'block';
     const bookDetails = document.querySelector(".see-book-details");
     bookDetails.classList.add("active");
+    document.getElementById("overlay").classList.add("active");
+    body.classList.add("no-scroll");
     addDetailsByBookID(bookID);
     addContentCmtByBookID(bookID);
 };
@@ -274,6 +309,7 @@ async function takeRateByUser(){
         const response = await fetch(`http://localhost:8081/api/rates/getrate/${infoUser.userID}`);
         if (!response.ok) throw new Error(`Error! Status: ${response.status}`);
         const data =  await response.json();
+        console.log(data);
         sessionStorage.setItem('rateOfUser', JSON.stringify(data));
     } catch(error) {
         console.error(error);
@@ -281,9 +317,10 @@ async function takeRateByUser(){
     };
 };
 takeRateByUser();
-const rateOfUser = JSON.parse(sessionStorage.getItem('rateOfUser'));
 async function addDetailsByBookID(bookID){
-     fetch(`http://localhost:8081/api/books/detail/${bookID}`)
+    const rateOfUser = JSON.parse(sessionStorage.getItem('rateOfUser'));
+    console.log(rateOfUser)
+    fetch(`http://localhost:8081/api/books/detail/${bookID}`)
         .then(response => {
             if (!response.ok){
                 throw new Error(`Error, Status: ${response.status}`);
@@ -312,7 +349,7 @@ async function addDetailsByBookID(bookID){
                     </h3>
                     <p><b>Tác giả: </b>${data.author}</p>
                     <p><b>Thể loại: </b>${data.category}</p>
-                    <p id="book-id"><b>ID: </b>${data.bookID}</p>
+                    <p id="book-id"><b>Mã sách: </b>${data.bookID}</p>
                     <p><b>Ngày xuất bản: </b>${data.publishDate}</p>
                     <p class="description-book"><b>Mô tả: </b>${data.description}</p>
                     <p>------------------------------------------------------------------------------------------</p>
@@ -323,54 +360,105 @@ async function addDetailsByBookID(bookID){
                 body.classList.add("no-scroll");
                 //function hover rate by userID, take rate by user
                 const stars = document.querySelectorAll(".count-star");
-                const rateOfBook = rateOfUser.find(r => r.bookID === bookID);
-                let starToFillColor = 0;
-                if(rateOfBook){
-                    starToFillColor = parseInt(rateOfBook.rate);
-                    for (let i = 0; i < starToFillColor; i++){
-                        stars[i].style.color = `yellow`;
-                    };
-                };
-                Array.from(stars).forEach((star, index) => {
-                    const numberStar = index + 1;
-                    star.addEventListener("mouseenter", () => {
-                        for(let i = 0; i <= index; i++){
-                            stars[i].style.color = 'yellow';
-                        };
-                    }); 
-                    star.addEventListener("mouseleave", () => {
-                        for(let i = 9; i > starToFillColor - 1; i--){
-                            stars[i].style.color = 'gray';
-                        };
-                    });
-                    star.addEventListener("click", async () => {
-                        const dataToSend = {
-                            userID: infoUser.userID,
-                            bookID,
-                            rate: numberStar
-                        };
-                        try {
-                            const response = await fetch(`http://localhost:8081/api/rates/create`,{
-                                method: 'POST',
-                                headers: {'Content-Type':'application/json'},
-                                body: JSON.stringify(dataToSend)
-                            });
-                            if (!response.ok) throw new Error(`Error! Status: ${response.status}`);
-                            const dataReceive = await response.json();
-                            starToFillColor = dataReceive.rate;
-                            for(let i = 0; i < starToFillColor; i++){
+                if(!rateOfUser || rateOfUser.length === 0){
+                    console.log(123)
+                    let starToFillColor = 0;
+                        Array.from(stars).forEach((star, index) => {
+                        const numberStar = index + 1;
+                        star.addEventListener("mouseenter", () => {
+                            for(let i = 0; i <= index; i++){
                                 stars[i].style.color = 'yellow';
                             };
-                            for(let i = 9; i >= dataReceive.rate; i--){
+                        }); 
+                        star.addEventListener("mouseleave", () => {
+                            for(let i = 9; i > starToFillColor - 1; i--){
                                 stars[i].style.color = 'gray';
                             };
-                            notification("Gửi đánh giá thành công!", true);
-                        } catch (error) {
-                            console.error(error);
-                            notification(error.message, false);
-                        };
+                        });
+                        star.addEventListener("click", async () => {
+                            const dataToSend = {
+                                userID: infoUser.userID,
+                                bookID,
+                                rate: numberStar
+                            };
+                            try {
+                                const response = await fetch(`http://localhost:8081/api/rates/create`,{
+                                    method: 'POST',
+                                    headers: {'Content-Type':'application/json'},
+                                    body: JSON.stringify(dataToSend)
+                                });
+                                if (!response.ok) throw new Error(`Error! Status: ${response.status}`);
+                                takeRateByUser();
+                                const dataReceive = await response.json();
+                                document.getElementById(`rate-book-${dataToSend.bookID}`).innerHTML = `Đánh giá: ${dataReceive.rate} <ion-icon name="star" class="icon-star"></ion-icon>`;
+                                starToFillColor = dataToSend.rate;
+                                for(let i = 0; i < starToFillColor; i++){
+                                    stars[i].style.color = 'yellow';
+                                };
+                                for(let i = 9; i >= dataToSend.rate; i--){
+                                    stars[i].style.color = 'gray';
+                                };
+                                notification("Gửi đánh giá thành công!", true);
+                            } catch (error) {
+                                console.error(error);
+                                notification(error.message, false);
+                            };
+                        });
                     });
-                });
+                } else {
+                    console.log(456)
+                    const rateOfBook = rateOfUser.find(r => r.bookID === bookID);
+                    let starToFillColor = 0;
+                    if(rateOfBook){
+                        starToFillColor = parseInt(rateOfBook.rate);
+                        for (let i = 0; i < starToFillColor; i++){
+                            stars[i].style.color = `yellow`;
+                        };
+                    };
+                        Array.from(stars).forEach((star, index) => {
+                        const numberStar = index + 1;
+                        star.addEventListener("mouseenter", () => {
+                            for(let i = 0; i <= index; i++){
+                                stars[i].style.color = 'yellow';
+                            };
+                        }); 
+                        star.addEventListener("mouseleave", () => {
+                            for(let i = 9; i > starToFillColor - 1; i--){
+                                stars[i].style.color = 'gray';
+                            };
+                        });
+                        star.addEventListener("click", async () => {
+                            const dataToSend = {
+                                userID: infoUser.userID,
+                                bookID,
+                                rate: numberStar
+                            };
+                            try {
+                                const response = await fetch(`http://localhost:8081/api/rates/create`,{
+                                    method: 'POST',
+                                    headers: {'Content-Type':'application/json'},
+                                    body: JSON.stringify(dataToSend)
+                                });
+                                if (!response.ok) throw new Error(`Error! Status: ${response.status}`);
+                                takeRateByUser();
+                                const dataReceive = await response.json();
+                                document.getElementById(`rate-book-${dataToSend.bookID}`).innerHTML = `Đánh giá: ${dataReceive.rate} <ion-icon name="star" class="icon-star"></ion-icon>`;
+                                starToFillColor = dataToSend.rate;
+                                for(let i = 0; i < starToFillColor; i++){
+                                    stars[i].style.color = 'yellow';
+                                };
+                                for(let i = 9; i >= dataToSend.rate; i--){
+                                    stars[i].style.color = 'gray';
+                                };
+                                notification("Gửi đánh giá thành công!", true);
+                            } catch (error) {
+                                console.error(error);
+                                notification(error.message, false);
+                            };
+                        });
+                    });
+                };
+                
             };
 
         })
@@ -400,7 +488,7 @@ async function addContentCmtByBookID(bookID){
                 <li id="cmt-id-${comment.commentID}">
                      <div class="area-content-cmt">
                         <span class="avatar">
-                            <img class="user-pic-cmt" src="${comment.imageLink}">
+                            <img class="user-pic-cmt" src="http://localhost:8081/hinh_anh/avatar.jpg">
                         </span>
                         <div class="cmt-content">
                             <p class="usernameF" data-id="${comment.userID}">${comment.username}
@@ -441,11 +529,13 @@ async function addContentCmtByBookID(bookID){
         setInterval(updateAllTimeAgo, 60000);
     }catch(error){
         console.error(error);
-        notification(error.message, false);
+        document.getElementById("section-content").innerHTML = "";
     };
 };
-document.querySelector(".close-section-icon").addEventListener("click", () => {
+// đóng details book
+document.getElementById("close-details-book").addEventListener("click", () => {
     const bookDetails = document.querySelector(".see-book-details");
+    document.getElementById("title-details-book").style.display = 'none';
     bookDetails.classList.remove("active");
     document.getElementById("overlay").classList.remove("active");
     body.classList.remove("no-scroll");
@@ -455,8 +545,9 @@ async function postComment(){
     const comment = {
         comment: document.getElementById("cmt-input").value,
         userID: infoUser.userID,
-        bookID: parseInt(document.getElementById("book-id").textContent.replace('ID: ', ''))
+        bookID: parseInt(document.getElementById("book-id").textContent.replace('Mã sách: ', ''))
     }
+    console.log(comment);
     try {
         const response = await fetch("http://localhost:8081/api/comments/post",{
             method: 'POST',
@@ -465,7 +556,6 @@ async function postComment(){
         });
         if (!response.ok) throw new Error(`Error, Status: ${response.status}`);
         const data = await response.json();
-        console.log(data)
         const timeComment = moment(data.lastUpdate, "DD/MM/YYYY HH:mm:ss");
         const timeAgo = timeComment.fromNow();
         const newComment = document.createElement("li");
@@ -473,7 +563,7 @@ async function postComment(){
         newComment.innerHTML = `
                  <div class="area-content-cmt">
                      <span class="avatar">
-                        <img class="user-pic-cmt" src="${infoUser.imageLink}">
+                        <img class="user-pic-cmt" src="http://localhost:8081/api/books${infoUser.imageLink} || '/Assets/user0.png">
                     </span>
                     <div class="cmt-content">
                         <p class="usernameF" data-id="${infoUser.userID}">${infoUser.username}
@@ -521,6 +611,7 @@ function showMenuActions(commentID){
 }; 
 // function delete comments 
 function confirmDelete(commentID) {
+    document.getElementById(`menu-${commentID}`).style.display = 'none';
     const commentIDToDelete = commentID
     const confirmActions = document.getElementById(`confirm-actions`);
     confirmActions.style.display = 'block';
@@ -531,7 +622,6 @@ function confirmDelete(commentID) {
     const confirm = document.getElementById("confirm");
     confirm.addEventListener("click", () => {
         confirmActions.style.display = 'none';
-        console.log(commentIDToDelete);
         deleteComment(commentIDToDelete);
     }, { once: true });
 };
@@ -578,7 +668,6 @@ function showButtonEdit(commentID){
     const confirm = document.getElementById("confirm-to-edit");
     confirm.addEventListener("click", () => {
         buttonEdit.style.display = 'none';
-        console.log(commentID);
         editComment(commentID, contentComment);
     }, { once: true });
        const menuComment = document.getElementById(`menu-${commentID}`);
@@ -625,12 +714,10 @@ function pickElementInCart(bookID, button){
     const bookPicked = document.getElementById(`book-inCart-${bookID}`);
     if(button.innerText === "Chọn"){
         bookPicked.style.backgroundColor = '#91a897';
-        
         bookPicked.setAttribute("data-boolean", "1");
         button.innerText = "Bỏ chọn";
     }else {
         bookPicked.style.backgroundColor = '#dedede';
-        
         bookPicked.setAttribute("data-boolean", "0");
         button.innerText = "Chọn";
     } 
@@ -642,14 +729,12 @@ function pickAllElementInCart(button){
         Array.from(allBookToPick).forEach(row => {
             row.style.backgroundColor = "#91a897";
             row.setAttribute("data-boolean", "1");
-            row.querySelector(".input-quantity-inCart").style.backgroundColor ='#91a897';
         });
         button.innerText = "Bỏ chọn tất";
     } else {
         Array.from(allBookToPick).forEach(row => {
             row.style.backgroundColor = "#dedede";
             row.setAttribute("data-boolean", "0");
-            row.querySelector(".input-quantity-inCart").style.backgroundColor ='#dedede';
         });
         button.innerText = "Chọn tất cả";
     };
@@ -659,7 +744,7 @@ async function deleteElementInCart(bookID){
     const bookToDelete = document.getElementById(`book-inCart-${bookID}`);
     const dataToSend = {
         userID: infoUser.userID,
-        bookID:[bookID]
+        bookID
     };
     try {
         const response = await fetch(`http://localhost:8081/api/cart/deleteItem`, {
@@ -691,9 +776,8 @@ async function deleteElementsInCart(){
     }).filter(item => item !== null);
     const dataToSend = {
         userID: infoUser.userID,
-        bookID: bookIDToSend
+        listBookID: bookIDToSend
     }
-    console.log(dataToSend);
     try {
         const response = await fetch(`http://localhost:8081/api/cart/deleteItem`, {
             method: 'DELETE',
@@ -728,7 +812,7 @@ async function showInfoInCart(){
             const row = `
                     <tr data-boolean="0" data-id="${cart.bookID}" id="book-inCart-${cart.bookID}">
                         <td>${cart.bookID}</td>
-                        <td><img src="http://localhost:8081/api/books${cart.pathPicture}" class="picture-book-inCart"></td>
+                        <td><img src="http://localhost:8081/api/books${cart.imageLink}" class="picture-book-inCart"></td>
                         <td>${cart.title}</td>
                         <td>${cart.category}</td>
                         <td>
@@ -751,7 +835,8 @@ const closeCartBtn = document.getElementById("close-cart");
 const inCart = document.getElementById("in-cart");
 const iconCart = document.getElementById("cart-icon");
 const titleCart = document.getElementById("title-cart");
-iconCart.addEventListener("click", () => {
+iconCart.addEventListener("click", (e) => {
+    e.preventDefault();
     inCart.classList.add("active");
     titleCart.classList.add("active");
     document.getElementById("overlay").classList.add("active");
@@ -769,7 +854,8 @@ const closeProfileBtn = document.getElementById("close-profile");
 const inProfile = document.getElementById("in-profile");
 const iconProfile = document.getElementById("profile-icon");
 const titleProfile = document.getElementById("title-profile");
-iconProfile.addEventListener("click", () => {
+iconProfile.addEventListener("click", (e) => {
+    e.preventDefault();
     inProfile.style.display = "block";
     titleProfile.style.display = "block";
     document.getElementById("overlay").classList.add("active");
@@ -788,7 +874,8 @@ const closeListBorrowBtn = document.getElementById("close-list-borrow");
 const inListBorrow = document.getElementById("in-list-borrow");
 const textViewListBorrow = document.getElementById("text-view-list-borrow");
 const titleListBorrow = document.getElementById("title-list-borrow");
-textViewListBorrow.addEventListener("click", () => {
+textViewListBorrow.addEventListener("click", (e) => {
+    e.preventDefault();
     inListBorrow.style.display = "block";
     titleListBorrow.style.display = "block";
     document.getElementById("overlay").classList.add("active");
@@ -833,6 +920,7 @@ async function FetchDataBorrows(){
         const response = await fetch(`http://localhost:8081/api/borrowed-books/user/${infoUser.userID}`);
         if(!response.ok) throw new Error(`Error! Status: ${response.status}`);
         const dataReceive = await response.json();
+        console.log(dataReceive);
         dataReceive.forEach(data => {
             const tableBody = document.getElementById("table-body-list-borrow");
             
@@ -863,6 +951,195 @@ async function FetchDataBorrows(){
     }
 };
 FetchDataBorrows();
+// chức năng lọc theo author và category
+let timeOut;
+function filterByInput(inputID){
+    clearTimeout(timeOut);
+    timeOut = setTimeout( () => {
+        const inputButton = document.getElementById(inputID);
+        const searchTerm = inputButton.value.toLowerCase().trim();
+        console.log(searchTerm);
+        const authorUnique = sessionStorage.getItem('authorUnique');
+        allAuthor = JSON.parse(authorUnique);
+        const categoryUnique = sessionStorage.getItem('categoryUnique');
+        allCategory = JSON.parse(categoryUnique);
+        if(inputID === 'filter-category'){
+            categoryFound = allCategory.filter(category => category.toLowerCase().includes(searchTerm));
+            let optionCategory = document.getElementById("option-category");
+            optionCategory.innerHTML = "";
+            categoryFound.forEach(category => {
+                 const addOptionC = `
+                    <div class = "category-name">${category}</div>
+                `;
+                optionCategory.innerHTML += addOptionC;
+            });
+        } 
+        else {
+            authorFound = allAuthor.filter(author => author.toLowerCase().includes(searchTerm));
+            let optionAuthor = document.getElementById("option-author");
+            optionAuthor.innerHTML = "";
+            authorFound.forEach(author => {
+                 const addOptionA = `
+                    <div class = "author-name">${author}</div>
+                `;
+                optionAuthor.innerHTML += addOptionA;
+            });
+        };
+    }, 200);
+};
+document.getElementById("filter-category").addEventListener("input", (e) => {
+    e.preventDefault();
+    filterByInput('filter-category');
+});
+document.getElementById("filter-author").addEventListener("input", (e) => {
+    e.preventDefault();
+    filterByInput('filter-author');
+});
+const optionCategory = document.getElementById("option-category");
+optionCategory.addEventListener("click", async (e) => {
+    if(e.target && e.target.classList.contains('category-name')){
+        const categoryElements = document.querySelectorAll('.category-name');
+        Array.from(categoryElements).forEach(categoryElement => {
+            categoryElement.style.backgroundColor = "#dedede";
+            categoryElement.style.color = "black";
+        })
+        const inputCategory = document.getElementById('filter-category');
+        inputCategory.value = e.target.textContent.trim();
+        e.target.style.backgroundColor = "#444";
+        e.target.style.color = "#dedede";
+        try {
+            const response = await fetch('http://localhost:8081/api/books/allbooks');
+            if (!response.ok){
+                throw new Error(`Error: ${response.status}`);
+            };
+            const books = await response.json();
+            const bookFound = books.filter(book => {
+                const category = book.category ? book.category.toLowerCase() : ""; 
+                return category.includes(inputCategory.value.toLowerCase()) 
+            
+            });
+            displayListBook(bookFound);
+            Array.from(document.querySelectorAll(".author-name")).forEach(element => {
+                element.style.backgroundColor = "#dedede";
+                element.style.color = "black";
+            });
+            document.getElementById("filter-author").value = "";
+        } catch(error){
+            console.error(error);
+        }
+    }
+});
+const optionAuthor = document.getElementById("option-author");
+optionAuthor.addEventListener("click", async (e) => {
+    if(e.target && e.target.classList.contains('author-name')){
+        const authorElements = document.querySelectorAll('.author-name');
+        Array.from(authorElements).forEach(authorElement => {
+            authorElement.style.backgroundColor = "#dedede";
+            authorElement.style.color = "black";
+        })
+        const inputAuthor = document.getElementById('filter-author');
+        inputAuthor.value = e.target.textContent.trim();
+        e.target.style.backgroundColor = "#444";
+        e.target.style.color = "#dedede";
+        try {
+            const response = await fetch('http://localhost:8081/api/books/allbooks');
+            if (!response.ok){
+                throw new Error(`Error: ${response.status}`);
+            };
+            const books = await response.json();
+            const bookFound = books.filter(book => {
+                const author = book.author ? book.author.toLowerCase() : ""; 
+                return author.includes(inputAuthor.value.toLowerCase()) 
+            
+            });
+            displayListBook(bookFound);
+            Array.from(document.querySelectorAll(".category-name")).forEach(element => {
+                element.style.backgroundColor = "#dedede";
+                element.style.color = "black";
+            });
+            document.getElementById("filter-category").value = "";
+        } catch(error){
+            console.error(error);
+        }
+    }
+});
+const chevronFilterStatus = document.getElementById("filter-by-status");
+chevronFilterStatus.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("option-filter-status").classList.toggle("active");
+});
+// function quay lại ban đầu khi lọc hoặc search 
+document.getElementById("arrow-back-icon").addEventListener("click", () => {
+    fetchDataBooks();
+    document.getElementById("filter-category").value = "";
+    document.getElementById("filter-author").value = "";
+});
+
+// filter by status (điểm cao, nhiều lượt mượn)
+document.getElementById("option-filter-status").addEventListener("click", async function (e) {
+    e.preventDefault();
+    if(e.target && e.target.classList.contains('options')){
+        console.log(e.target.innerText);
+        if(e.target.innerText === "SÁCH MƯỢN NHIỀU TRONG THÁNG"){
+            console.log(1)
+            try {
+                const response = await fetch(`http://localhost:8081/api/books/allbooks`);
+                if(!response.ok) throw new  Error(`Error: Status ${response.status}`);
+                const dataReceived = await response.json();
+                const dataSorted = dataReceived.sort((a, b) => {
+                    const quantityBorrowA = a.quantityTotal - a.quantityValid;
+                    const quantityBorrowB = b.quantityTotal - b.quantityValid;
+                    return quantityBorrowB - quantityBorrowA;
+                });
+                displayListBook(dataSorted.slice(0, 8));
+                Array.from(document.querySelectorAll(".category-name")).forEach(element => {
+                    element.style.backgroundColor = "#dedede";
+                    element.style.color = "black";
+                });
+                Array.from(document.querySelectorAll(".author-name")).forEach(element => {
+                    element.style.backgroundColor = "#dedede";
+                    element.style.color = "black";
+                });
+                document.getElementById("filter-category").value = "";
+                document.getElementById("filter-author").value = "";
+            } catch(error){
+                console.error(error);
+            }
+        } else if (e.target.innerText === "TẤT CẢ SÁCH TRONG KHO"){
+            fetchDataBooks();
+            document.getElementById("filter-category").value = "";
+            document.getElementById("filter-author").value = "";
+        } else {
+            try {
+                const response = await fetch(`http://localhost:8081/api/books/allbooks`);
+                if(!response.ok) throw new  Error(`Error: Status ${response.status}`);
+                const dataReceived = await response.json();
+                const dataSorted = dataReceived.sort((a, b) => {
+                    const rateA = a.rate;
+                    const rateB = b.rate;
+                    return rateB - rateA;
+                });
+                displayListBook(dataSorted.slice(0, 8));
+                Array.from(document.querySelectorAll(".category-name")).forEach(element => {
+                    element.style.backgroundColor = "#dedede";
+                    element.style.color = "black";
+                });
+                Array.from(document.querySelectorAll(".author-name")).forEach(element => {
+                    element.style.backgroundColor = "#dedede";
+                    element.style.color = "black";
+                });
+                document.getElementById("filter-category").value = "";
+                document.getElementById("filter-author").value = "";
+            } catch(error){
+                console.error(error);
+            }
+        }
+        const valueInOption = document.querySelector(".filter-by-status div").innerText;
+        document.querySelector('.filter-by-status div').innerText = e.target.innerText;
+        e.target.innerText = valueInOption;
+        this.classList.remove('active');
+    };
+});
 
 
 

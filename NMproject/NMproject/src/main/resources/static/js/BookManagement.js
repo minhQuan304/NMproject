@@ -265,7 +265,7 @@ function showBookDetail(id) {
           <div class="font-medium text-gray-500">Thể loại:</div>
           <div>${book.category}</div>
           <div class="font-medium text-gray-500">Ngày xuất bản:</div>
-          <div>${formatDate(book.publishDate || book.date)}</div>
+          <div>${formatDate(book.publishDate || book.publishDate)}</div>
           <div class="font-medium text-gray-500">Tổng số lượng:</div>
           <div>${book.quantityTotal || book.totalQuantity}</div>
           <div class="font-medium text-gray-500">Số lượng còn lại:</div>
@@ -296,94 +296,77 @@ function handleDelete() {
 }
 
 // Xử lý thêm sách mới
-document
-  .getElementById("bookForm")
-  .addEventListener("submit", async function (e) {
+
+document.getElementById("bookForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
+    const formData = new FormData();
     const imageFile = document.getElementById("imageFile").files[0];
-    let imageLink = "/Assets/default-book.png"; // Link mặc định
 
-    // Nếu có file ảnh được chọn, xử lý upload
+    console.log(imageFile);
+
     if (imageFile) {
-      const formData = new FormData();
-      formData.append("image", imageFile);
-
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          imageLink = data.imageUrl;
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
+        formData.append("image", imageFile); // Đúng tên tham số
+    } else {
+        alert("Vui lòng chọn ảnh cho sách!");
+        return;
     }
 
     const newBook = {
-      name: document.getElementById("name").value,
-      author: document.getElementById("author").value,
-      category: document.getElementById("category").value,
-      description: document.getElementById("description").value || null,
-      date: document.getElementById("date").value,
-      totalQuantity: parseInt(document.getElementById("totalQuantity").value),
-      availableQuantity: parseInt(
-        document.getElementById("availableQuantity").value
-      ),
-      imageLink: imageLink,
+        title: document.getElementById("title").value.trim(),
+        author: document.getElementById("author").value.trim(),
+        category: document.getElementById("category").value.trim(),
+        description: document.getElementById("description").value.trim() || null,
+        publishDate: document.getElementById("date").value.trim(),
+        quantityTotal: parseInt(document.getElementById("quantityTotal").value),
+        quantityValid: parseInt(document.getElementById("quantityValid").value),
     };
 
-    // Kiểm tra logic số lượng
-    if (newBook.availableQuantity > newBook.totalQuantity) {
-      alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
-      return;
+    if (newBook.quantityValid > newBook.quantityTotal) {
+        alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
+        return;
     }
 
-    // Kiểm tra các trường bắt buộc
     if (
-      !newBook.name ||
-      !newBook.author ||
-      !newBook.category ||
-      !newBook.date ||
-      !newBook.totalQuantity ||
-      !newBook.availableQuantity
+        !newBook.title ||
+        !newBook.author ||
+        !newBook.category ||
+        !newBook.publishDate ||
+        isNaN(newBook.quantityTotal) ||
+        isNaN(newBook.quantityValid)
     ) {
-      alert("Vui lòng điền đầy đủ thông tin!");
-      return;
+        alert("Vui lòng điền đầy đủ thông tin và kiểm tra số lượng!");
+        return;
     }
 
-    fetch(`${API_URL}/addbooks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newBook),
-    })
-      .then((response) => {
+    formData.append("book", JSON.stringify(newBook)); // Thêm JSON đúng tham số
+
+    try {
+        const response = await fetch(`${API_URL}/addbooks`, {
+            method: "POST",
+            body: formData,
+        });
+
         if (!response.ok) {
-          return response.json().then((err) => {
-            throw new Error(
-              err.message || `HTTP error! status: ${response.status}`
-            );
-          });
+            const errorText = await response.text();
+            console.error("Backend error:", errorText);
+            alert(`Lỗi: ${response.status} - ${errorText}`);
+            return;
         }
-        return response.json();
-      })
-      .then((data) => {
+
+        const data = await response.json();
         alert("Thêm sách thành công!");
         this.reset();
         fetchBooks();
         closeAddModal();
-      })
-      .catch((error) => {
+    } catch (error) {
         console.error("Error:", error);
         alert(error.message || "Lỗi khi thêm sách");
-      });
-  });
+    }
+});
+
+	
+
 
 // Thêm các hàm xử lý modal
 function showUpdateModal(id) {
@@ -428,78 +411,59 @@ function updateBook(id) {
 }
 
 // Thêm xử l form cập nhật
-document
-  .getElementById("updateForm")
-  .addEventListener("submit", async function (e) {
-    e.preventDefault();
-    console.log("Update form submitted");
+document.getElementById("updateForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const id = document.getElementById("updateBookId").value.trim(); // Lấy id sách từ input ẩn hoặc nguồn khác
 
-    const id = document.getElementById("updateBookId").value;
-    let imageLink = document.getElementById("currentBookImage").src;
+  const formData = new FormData();
+  const imageFile = document.getElementById("updateImageFile").files[0]; // Lấy file ảnh từ input
 
-    // Xử lý upload ảnh mới nếu có
-    const imageFile = document.getElementById("updateImageFile").files[0];
-    if (imageFile) {
-      const formData = new FormData();
-      formData.append("image", imageFile);
+  if (imageFile) {
+    formData.append("file", imageFile); // Thêm file ảnh vào FormData
+  }
 
-      try {
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+  // Chuẩn bị dữ liệu sách cần cập nhật
+  const updatedBook = {
+    title: document.getElementById("updateName").value.trim(),
+    author: document.getElementById("updateAuthor").value.trim(),
+    category: document.getElementById("updateCategory").value.trim(),
+    description: document.getElementById("updateDescription").value.trim() || null,
+    publishDate: document.getElementById("updateDate").value.trim(),
+    quantityTotal: parseInt(document.getElementById("updateTotalQuantity").value),
+    quantityValid: parseInt(document.getElementById("updateAvailableQuantity").value),
+  };
 
-        if (response.ok) {
-          const data = await response.json();
-          imageLink = data.imageUrl;
-        }
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    }
+  // Kiểm tra logic số lượng
+  if (updatedBook.quantityValid > updatedBook.quantityTotal) {
+    alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
+    return;
+  }
 
-    const updatedBook = {
-      title: document.getElementById("updateName").value,
-      author: document.getElementById("updateAuthor").value,
-      category: document.getElementById("updateCategory").value,
-      description: document.getElementById("updateDescription").value || null,
-      publishDate: document.getElementById("updateDate").value,
-      quantityTotal: parseInt(
-        document.getElementById("updateTotalQuantity").value
-      ),
-      quantityValid: parseInt(
-        document.getElementById("updateAvailableQuantity").value
-      ),
-      imageLink: imageLink,
-    };
+  // Thêm thông tin sách vào FormData
+  formData.append("bookDTO", JSON.stringify(updatedBook));
 
-    // Kiểm tra logic số lượng
-    if (updatedBook.quantityValid > updatedBook.quantityTotal) {
-      alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
-      return;
-    }
-
-    fetch(`${API_URL}/update/${id}`, {
+  try {
+    const response = await fetch(`${API_URL}/update/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedBook),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Lỗi khi cập nhật sách");
-        return response.json();
-      })
-      .then((data) => {
-        alert("Cập nhật sách thành công!");
-        closeUpdateModal();
-        fetchBooks();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Lỗi khi cập nhật sách: " + error.message);
-      });
-  });
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Lỗi ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    alert("Cập nhật sách thành công!");
+    closeUpdateModal();
+    fetchBooks(); // Cập nhật lại danh sách sách
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Lỗi khi cập nhật sách: " + error.message);
+  }
+});
+
+
 
 // Hàm xóa sách
 function deleteBook(id) {

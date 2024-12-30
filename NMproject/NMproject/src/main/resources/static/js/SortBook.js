@@ -12,9 +12,9 @@ function initializeSort() {
 
   // Thêm icon và xử lý sự kiện cho các cột có thể sắp xếp
   const sortableColumns = [
-    { index: 0, field: "bookId", title: "ID" },
+    { index: 0, field: "bookID", title: "ID" },
     { index: 1, field: "title", title: "Tên Sách" },
-    { index: 3, field: "category", title: "Thể Loại" },
+    { index: 3, field: "category", title: "Thể loại sách" },
     { index: 5, field: "publishDate", title: "Ngày xuất bản" },
   ];
 
@@ -62,8 +62,8 @@ function handleSort(field) {
     let comparison = 0;
 
     switch (field) {
-      case "bookId":
-        comparison = a.bookId - b.bookId;
+      case "bookID":
+        comparison = a.bookID - b.bookID;
         break;
 
       case "title":
@@ -111,12 +111,12 @@ function updateSortIcons(activeField) {
   // Tìm và cập nhật icon của cột đang được sắp xếp
   const activeHeader = Array.from(headers).find((icon) =>
     icon.parentElement.textContent.includes(
-      activeField === "bookId"
+      activeField === "bookID"
         ? "ID"
         : activeField === "title"
         ? "Tên Sách"
         : activeField === "category"
-        ? "Thể Loại"
+        ? "Thể loại sách"
         : "Ngày xuất bản"
     )
   );

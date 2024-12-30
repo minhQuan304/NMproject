@@ -1,6 +1,6 @@
 package com.example.NMproject.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +62,7 @@ public class AccountService {
 			account.setAddress(address);
 			account.setUserRole(userID);
 			// Cập nhật thời gian cập nhật
-			account.setUpdateAt(LocalDateTime.now());
+			account.setUpdateAt(LocalDate.now());
 			return accountRepository.save(account); // Lưu lại thông tin đã được cập nhật
 		} else {
 			throw new RuntimeException("User not found with ID: " + userID);

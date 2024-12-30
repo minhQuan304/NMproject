@@ -1,6 +1,6 @@
 package com.example.NMproject.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,9 +26,8 @@ public class AccountEntity {
 	private String name;
 	private String phone;
 	private String address;
-	private String pathPicture;
-	private LocalDateTime createAt;
-	private LocalDateTime updateAt;
+	private LocalDate createAt;
+	private LocalDate updateAt;
 	private long userRole;
 
 	public AccountEntity(String email, String username, String password) {

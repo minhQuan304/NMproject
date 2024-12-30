@@ -56,9 +56,11 @@ public class RatingService {
 		BigDecimal roundedRateAverage = new BigDecimal(rateAverage).setScale(1, RoundingMode.HALF_UP);
 		updateBookRateAverage(ratingDTO.getBookID(), roundedRateAverage.doubleValue());
 
-		// Trả về response
-		return new RatingResponseDTO(roundedRateAverage.doubleValue(), rating.getRate(),
-				"Đánh giá cuốn sách này thành công!");
+		// Trả về chỉ rate từ Book và message
+		Optional<Book> bookOptional = bookRepository.findById(ratingDTO.getBookID());
+		double bookRate = bookOptional.map(Book::getRate).orElse(0.0);
+
+		return new RatingResponseDTO(bookRate, "Đánh giá cuốn sách này thành công!");
 	}
 
 	// 3. Tính toán rateAverage của book
