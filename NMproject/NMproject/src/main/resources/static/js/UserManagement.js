@@ -123,10 +123,17 @@ function renderTable(data) {
             <td>${item.address}</td>
             <td>
                 <button onclick="viewUserDetails(${item.userID})">Xem</button>
-                <button onclick="deleteUser(${item.userID})">Xóa</button>
+                <button id="check-action-${item.userID}" onclick="checkActionUser(${item.userID}, this) data-status="${item.status}">Vô hiệu hóa</button>
             </td>
         `;
         tableBody.appendChild(row);
+		const status = document.getElementById(`check-action-${item.userID}`).getAttribute("data-status");
+		console.log(status)
+		if(status === 1){
+			document.getElementById(`check-action-${item.userID}`).innerText = "Vô hiệu hóa";
+		} else {
+			document.getElementById(`check-action-${item.userID}`).innerText = "Tái kích hoạt";
+		};
     });
 }
 // Hàm render phân trang
@@ -148,20 +155,42 @@ function renderPagination(totalPages) {
 // Gọi hàm loadUsers khi trang tải xong
 document.addEventListener("DOMContentLoaded", loadUsers);
 // Delete a user
-async function deleteUser(userID) {
-    if (!confirm("Are you sure you want to delete this user?")) return;
-    try {
-        const response = await fetch(`${API}/auth/delete/${userID}`, {
-            method: "DELETE",
-        });
+async function checkActionUser(userID, thisElement) {
+	const status = parseInt(thisElement.getAtrribute("data-status"));
+	if(status === 1){
+		if (!confirm("Chắc chắn muốn vô hiệu hóa tài khoản này?")) return;
+		    try {
+		        const response = await fetch(`${API}/auth/deactive/${userID}`, {
+		            method: "PUT",
+		        });
 
-        if (!response.ok) throw new Error("Failed to delete user");
-        notification("Xóa thành công", true);
-        loadUsers(); // Reload the table
-    } catch (error) {
-        console.error("Error deleting user:", error);
-        notification("Xóa thất bại", false);
-    }
+		        if (!response.ok) throw new Error(`Error! Status ${response.status}`);
+				const dataReceived = await response.json();
+				thisElement.innerText = "Tái kích hoạt";
+				thisElement.setAttribute("data-status", dataReceived.status);
+		        notification("Vô hiệu hóa thành công", true);
+		    } catch (error) {
+		        console.error("Error deleting user:", error);
+		        notification("Vô hiệu hóa thất bại", false);
+		    }
+	} else {
+		if (!confirm("Chắc chắn muốn tái kích hoạt tài khoản này?")) return;
+				    try {
+				        const response = await fetch(`${API}/auth/active/${userID}`, {
+				            method: "PUT",
+				        });
+
+				        if (!response.ok) throw new Error(`Error! Status ${response.status}`);
+						const dataReceived = await response.json();
+						thisElement.innerText = "Vô hiệu hóa";
+						thisElement.setAttribute("data-status", dataReceived.status);
+				        notification("Tái kích hoạt thành công", true);
+				    } catch (error) {
+				        console.error("Error deleting user:", error);
+				        notification("Tái kích hoạt thất bại", false);
+				    }
+	}
+    
 }
 async function viewUserDetails(userID) {
     try{

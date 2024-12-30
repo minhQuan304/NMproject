@@ -18,10 +18,26 @@ public class AccountService {
 	private AccountRepository accountRepository;
 
 	// Đăng nhập người dùng bằng email và password
+//	public Optional<AccountResponse> loginUser(String email, String password) {
+//		return accountRepository.findByEmailAndPassword(email, password)
+//				.map(user -> new AccountResponse(user.getUserID(), user.getUsername(), user.getEmail(), user.getName(),
+//						user.getPhone(), user.getAddress(), user.getUserRole()));
+//	}
 	public Optional<AccountResponse> loginUser(String email, String password) {
-		return accountRepository.findByEmailAndPassword(email, password)
-				.map(user -> new AccountResponse(user.getUserID(), user.getUsername(), user.getEmail(), user.getName(),
-						user.getPhone(), user.getAddress(), user.getUserRole()));
+		Optional<AccountEntity> user = accountRepository.findByEmailAndPassword(email, password);
+
+		if (user.isPresent()) {
+			AccountEntity account = user.get();
+			if (account.getStatus() == 1) {
+				return Optional.of(new AccountResponse(account.getUserID(), account.getUsername(), account.getEmail(),
+						account.getName(), account.getPhone(), account.getAddress(), account.getUserRole()));
+			} else {
+				// Trả về thông báo lỗi nếu status không phải là 1
+				throw new RuntimeException("Account is not active (status is not 1).");
+			}
+		} else {
+			throw new RuntimeException("Invalid email or password.");
+		}
 	}
 
 	// Đăng ký người dùng mới bằng email, username và password
@@ -41,11 +57,30 @@ public class AccountService {
 		return accountRepository.getAllUsersWithAccountInfo(); // Trả về danh sách AccountResponse
 	}
 
-	public void deleteUserById(long userID) {
+	public long deleteUserById(long userID) {
+		// Tìm user theo ID
+		Optional<AccountEntity> user = accountRepository.findById(userID);
+
+		if (user.isPresent()) {
+			// Cập nhật status của user về 0
+			AccountEntity account = user.get();
+			account.setStatus(0); // Giả sử bạn có một thuộc tính status trong AccountEntity
+			accountRepository.save(account);
+
+			// Trả về giá trị status sau khi cập nhật
+			return account.getStatus();
+		} else {
+			throw new RuntimeException("User not found with ID: " + userID);
+		}
+	}
+
+	public long activeUserById(long userID) {
 		Optional<AccountEntity> user = accountRepository.findById(userID);
 		if (user.isPresent()) {
-			// Sử dụng phương thức deleteByUserID trong repository
-			accountRepository.deleteByUserID(userID);
+			AccountEntity account = user.get();
+			account.setStatus(1); // Chuyển status thành 1
+			accountRepository.save(account); // Lưu thay đổi
+			return account.getStatus(); // Trả về status mới
 		} else {
 			throw new RuntimeException("User not found with ID: " + userID);
 		}

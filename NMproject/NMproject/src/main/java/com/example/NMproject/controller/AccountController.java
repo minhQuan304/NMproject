@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,16 +37,17 @@ public class AccountController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RegisterRequest request) {
-		Optional<AccountResponse> user = userService.loginUser(request.getEmail(), request.getPassword());
-
-		return user
-				.map(u -> ResponseEntity.ok(Map.of("message", "User login successfully", "userID", u.getUserID(),
-						"username", u.getUsername(), "imageLink", u.getImageLink(), "name", u.getName(), "phone",
-						u.getPhone(), "address", u.getAddress(), "userRole", u.getUserRole()))) // Thêm
-																								// userRole
-																								// vào
-				// phản hồi
-				.orElseGet(() -> ResponseEntity.status(401).body(Map.of("message", "Invalid email or password")));
+		try {
+			Optional<AccountResponse> user = userService.loginUser(request.getEmail(), request.getPassword());
+			return user
+					.map(u -> ResponseEntity.ok(Map.of("message", "User login successfully", "userID", u.getUserID(),
+							"username", u.getUsername(), "imageLink", u.getImageLink(), "name", u.getName(), "phone",
+							u.getPhone(), "address", u.getAddress(), "userRole", u.getUserRole())))
+					.orElseGet(() -> ResponseEntity.status(401)
+							.body(Map.of("message", "Invalid email, password, or account status")));
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
+		}
 	}
 
 	// Đăng nhập người dùng bằng email và password
@@ -95,14 +95,48 @@ public class AccountController {
 		return ResponseEntity.ok(users);
 	}
 
-	@DeleteMapping("/delete/{userID}")
-	public ResponseEntity<?> deleteUser(@PathVariable("userID") int userID) {
+//	@PostMapping("/delete/{userID}")
+//	public ResponseEntity<?> deleteUser(@PathVariable("userID") int userID) {
+//		try {
+//			// Gọi service để cập nhật trạng thái người dùng
+//			userService.deleteUserById(userID);
+//			return ResponseEntity.ok(new ApiResponse("User status updated to 0 successfully"));
+//		} catch (Exception e) {
+//			return ResponseEntity.badRequest().body(new ApiResponse("Error: " + e.getMessage()));
+//		}
+//	}
+	@PutMapping("/deactive/{userID}")
+	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("userID") long userID) {
+		Map<String, Object> response = new HashMap<>();
 		try {
-			// Gọi service để xóa người dùng
-			userService.deleteUserById(userID);
-			return ResponseEntity.ok(new ApiResponse("User deleted successfully"));
+			// Gọi service để xử lý, nhận giá trị status trả về
+			long status = userService.deleteUserById(userID);
+
+			// Trả về JSON với giá trị status
+
+			response.put("status", status); // Trả về giá trị status sau khi cập nhật
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(new ApiResponse("Error: " + e.getMessage()));
+			response.put("trạng thái", "error");
+			response.put("message", e.getMessage());
+			return ResponseEntity.badRequest().body(response);
+		}
+	}
+
+	@PutMapping("/active/{userID}")
+	public ResponseEntity<Map<String, Object>> activeUser(@PathVariable("userID") long userID) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			// Gọi service để active user và nhận giá trị status
+			long status = userService.activeUserById(userID);
+
+			// Trả về JSON với giá trị status
+			response.put("status", status); // Trả về giá trị status sau khi cập nhật
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			response.put("trạng thái", "error");
+			response.put("message", e.getMessage());
+			return ResponseEntity.badRequest().body(response);
 		}
 	}
 
