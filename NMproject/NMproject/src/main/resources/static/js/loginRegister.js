@@ -45,8 +45,13 @@ async function handleLogin(event) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(loginData)
         });
+		if(!response.ok) throw new Error(`Error! ${response.status}`);
         if(response.ok){
             const data = await response.json();
+			console.log(data)
+			if(data.message === "Account is not active (status is not 1)."){
+				alert("Không thể đăng nhập");
+			}
             console.log(data);
             const infoUser = {
                 username: data.username,
@@ -64,6 +69,7 @@ async function handleLogin(event) {
         }
     } catch (error) {
         console.error('Error:', error);
+		alert("Không thể đăng nhập");
     };
 };
 

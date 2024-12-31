@@ -53,7 +53,7 @@ function initializeSearch() {
     searchDebounceTimeout = setTimeout(() => {
       const searchTerm = e.target.value.toLowerCase().trim();
       performSearch(searchTerm);
-    }, 3000); // Đợi 500ms sau lần gõ cuối cùng mới thực hiện tìm kiếm
+    }, 500); // Đợi 500ms sau lần gõ cuối cùng mới thực hiện tìm kiếm
   });
 
   // Event listener cho keypress (Enter)

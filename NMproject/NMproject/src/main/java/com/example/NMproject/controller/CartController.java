@@ -20,7 +20,7 @@ import com.example.NMproject.dto.DeleteItemRequest;
 import com.example.NMproject.service.CartService;
 
 @RestController
-@RequestMapping("api/cart")
+@RequestMapping("/api/cart")
 public class CartController {
 
 	@Autowired

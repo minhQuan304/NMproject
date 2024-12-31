@@ -66,14 +66,14 @@ console.log(infoUser);
 if (infoUser) {
     document.addEventListener('DOMContentLoaded', () => {
         const imgElement = `
-            <img src="http://localhost:8081${infoUser.imageLink}" class="user-pic-in">${infoUser.username}
+            <img src="http://localhost:8081/hinh_anh/avatar.jpg" class="user-pic-in">${infoUser.username}
         `
         document.getElementById('username').innerHTML = imgElement;
         // document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
         // document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
         // document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
         // document.getElementById('avt-in-profile').src = infoUser.imageLink || "/Assets/user0.png";
-
+		document.getElementById('userpic').src = 'http://localhost:8081/hinh_anh/avatar.jpg';
     });
 };
 
@@ -112,6 +112,7 @@ function renderTable(data) {
     const tableBody = document.querySelector("#userTable tbody");
     tableBody.innerHTML = ''; // Xóa bảng cũ trước khi vẽ lại
     data.forEach(item => {
+		console.log(item.status)
         const row = document.createElement("tr");
         row.id = `${item.userID}`
         row.innerHTML = `
@@ -123,11 +124,11 @@ function renderTable(data) {
             <td>${item.address}</td>
             <td>
                 <button onclick="viewUserDetails(${item.userID})">Xem</button>
-                <button id="check-action-${item.userID}" onclick="checkActionUser(${item.userID}, this) data-status="${item.status}">Vô hiệu hóa</button>
+                <button id="check-action-${item.userID}" onclick="checkActionUser(${item.userID}, this)" data-status="${item.status}">Vô hiệu hóa</button>
             </td>
         `;
         tableBody.appendChild(row);
-		const status = document.getElementById(`check-action-${item.userID}`).getAttribute("data-status");
+		const status = parseInt(document.getElementById(`check-action-${item.userID}`).getAttribute("data-status"));
 		console.log(status)
 		if(status === 1){
 			document.getElementById(`check-action-${item.userID}`).innerText = "Vô hiệu hóa";
@@ -156,7 +157,7 @@ function renderPagination(totalPages) {
 document.addEventListener("DOMContentLoaded", loadUsers);
 // Delete a user
 async function checkActionUser(userID, thisElement) {
-	const status = parseInt(thisElement.getAtrribute("data-status"));
+	const status = parseInt(thisElement.getAttribute("data-status"));
 	if(status === 1){
 		if (!confirm("Chắc chắn muốn vô hiệu hóa tài khoản này?")) return;
 		    try {

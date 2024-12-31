@@ -26,16 +26,6 @@ public class AccountResponse {
 	}
 
 	// Constructor không có userRole
-	public AccountResponse(long userID, String username, String email, String name, String phone, String address) {
-		this.userID = userID;
-		this.username = username;
-		this.email = email;
-		this.name = name;
-		this.phone = phone;
-		this.address = address;
-	}
-
-	// Constructor có đầy đủ tất cả các trường
 	public AccountResponse(long userID, String username, String email, String name, String phone, String address,
 			long userRole) {
 		this.userID = userID;
@@ -45,5 +35,18 @@ public class AccountResponse {
 		this.phone = phone;
 		this.address = address;
 		this.userRole = userRole;
+	}
+
+	// Constructor có đầy đủ tất cả các trường
+	public AccountResponse(long userID, String username, String email, String name, String phone, String address,
+			long userRole, long status) {
+		this.userID = userID;
+		this.username = username;
+		this.email = email;
+		this.name = name;
+		this.phone = phone;
+		this.address = address;
+		this.userRole = userRole;
+		this.status = status;
 	}
 }

@@ -32,8 +32,8 @@ public class AccountService {
 				return Optional.of(new AccountResponse(account.getUserID(), account.getUsername(), account.getEmail(),
 						account.getName(), account.getPhone(), account.getAddress(), account.getUserRole()));
 			} else {
-				// Trả về thông báo lỗi nếu status không phải là 1
-				throw new RuntimeException("Account is not active (status is not 1).");
+				// Trả về lỗi với mã 351 nếu status là 0
+				throw new RuntimeException("Account is not active (status is 0). Error code: 351");
 			}
 		} else {
 			throw new RuntimeException("Invalid email or password.");

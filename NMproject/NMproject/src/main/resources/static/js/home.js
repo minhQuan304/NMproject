@@ -125,15 +125,15 @@ console.log(infoUser);
 if (infoUser) {
     document.addEventListener('DOMContentLoaded', () => {
         const imgElement = `
-            <img src="http://localhost:8081${infoUser.imageLink}" class="user-pic-in">${infoUser.username}
+            <img src="http://localhost:8081/hinh_anh/avatar.jpg" class="user-pic-in">${infoUser.username}
         `
         document.getElementById('username').innerHTML = imgElement;
         document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
         document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
         document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
-        document.getElementById('avt-in-profile').src =`http://localhost:8081${infoUser.imageLink}`;
-        document.getElementById('user-pic-cmt').src = `http://localhost:8081${infoUser.imageLink}`;
-        document.getElementById('userpic').src = `http://localhost:8081${infoUser.imageLink}`;
+        document.getElementById('avt-in-profile').src =`http://localhost:8081/hinh_anh/avatar.jpg`;
+        document.getElementById('user-pic-cmt').src = `http://localhost:8081/hinh_anh/avatar.jpg`;
+        document.getElementById('userpic').src = `http://localhost:8081/hinh_anh/avatar.jpg`;
         
     });
 };
@@ -193,7 +193,7 @@ updateProfileBtn.addEventListener("click", (e) => {
             phone: profilePhone.innerText
         }
         console.log(dataToSend);
-        fetch(`http://localhost:8081/api/users/update`, {
+        fetch(`http://localhost:8081/api/auth/update`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(dataToSend)
@@ -501,7 +501,7 @@ async function addContentCmtByBookID(bookID){
                 <li id="cmt-id-${comment.commentID}">
                      <div class="area-content-cmt">
                         <span class="avatar">
-                            <img class="user-pic-cmt" src="http://localhost:8081${comment.imageLink}">
+                            <img class="user-pic-cmt" src="http://localhost:8081/hinh_anh/avatar.jpg">
                         </span>
                         <div class="cmt-content">
                             <p class="usernameF" data-id="${comment.userID}">${comment.username}
@@ -576,7 +576,7 @@ async function postComment(){
         newComment.innerHTML = `
                  <div class="area-content-cmt">
                      <span class="avatar">
-                        <img class="user-pic-cmt" src="http://localhost:8081${infoUser.imageLink}">
+                        <img class="user-pic-cmt" src="http://localhost:8081/hinh_anh/avatar.jpg">
                     </span>
                     <div class="cmt-content">
                         <p class="usernameF" data-id="${infoUser.userID}">${infoUser.username}
@@ -757,7 +757,7 @@ async function deleteElementInCart(bookID){
     const bookToDelete = document.getElementById(`book-inCart-${bookID}`);
     const dataToSend = {
         userID: infoUser.userID,
-        bookID
+        bookID: [bookID]
     };
     try {
         const response = await fetch(`http://localhost:8081/api/cart/deleteItem`, {
@@ -789,7 +789,7 @@ async function deleteElementsInCart(){
     }).filter(item => item !== null);
     const dataToSend = {
         userID: infoUser.userID,
-        listBookID: bookIDToSend
+        bookID: bookIDToSend
     }
     try {
         const response = await fetch(`http://localhost:8081/api/cart/deleteItem`, {
@@ -824,8 +824,7 @@ async function showInfoInCart(){
         dataReceived.forEach(cart => {
             const row = `
                     <tr data-boolean="0" data-id="${cart.bookID}" id="book-inCart-${cart.bookID}">
-                        <td>${cart.bookID}</td>
-                        <td><img src="http://localhost:8081/api/books${cart.imageLink}" class="picture-book-inCart"></td>
+                        <td>${cart.bookID}</td>                      
                         <td>${cart.title}</td>
                         <td>${cart.category}</td>
                         <td>
@@ -940,7 +939,7 @@ async function FetchDataBorrows(){
             const row = `
                 <tr>
                     <td>${data.bookID}</td>
-                    <td><img src="http://localhost:8081/api/books${data.imageLink}" class="picture-book-borrow"></td>
+      
                     <td>${data.title}</td>
                     <td>${data.borrowDate}</td>
                     <td>${data.dueDate}</td>

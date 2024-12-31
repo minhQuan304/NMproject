@@ -29,6 +29,32 @@
 
     --body-font: 'Open Sans', sans-serif;
 }
+/* Define the animation for the dropdown items */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.dropdown-item {
+  opacity: 0;
+  transform: translateX(-30px); /* Start position */
+  animation: slideIn 0.5s forwards;
+}
+
+/* Delay each item to make them appear one by one */
+.dropdown-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.dropdown-item:nth-child(2) {
+  animation-delay: 0.25s;
+}
 
 :root {
     --z-back: -10;
@@ -283,25 +309,25 @@ a {
                     <span class="nav_logo-text">LM Systems</span>
                 </a>
                 <div class="nav_toggle" id="nav_toggle">
-                    <ion-icon name="chevron-back-outline" title="Thu gọn"></ion-icon>
+                    <ion-icon name="chevron-forward-outline" title="Thu gọn"></ion-icon>
                 </div>
                 <ul class="nav_list">
                     <a href="http://localhost:8081/api/home/home" class="nav_link">
                         <ion-icon name="home" class="nav_icon" title="Trang chủ"></ion-icon>
                         <span class="nav_text">Trang chủ</span>
                     </a>
-                    <a href="#" class="nav_link active">
+                    <a href="http://localhost:8081/api/home/BookManagemt" class="nav_link active">
                         <ion-icon name="book" class="nav_icon" title="Quản lý sách"></ion-icon>
                         <span class="nav_text">Quản lý sách</span>
                     </a>
                     <a href="http://localhost:8081/api/home/UserManagement" class="nav_link">
                         <ion-icon name="people" class="nav_icon" title="Quản lý người dùng"></ion-icon>
                         <span class="nav_text">Quản lý người dùng</span>
-                    </a>
+                    </a>                
                 </ul>
             </div>
             <div>
-                <a href="./loginRegister.html" class="nav_link" id="logout">
+                <a href="http://localhost:8081/api/auth/login" class="nav_link" id="logout">
                     <ion-icon name="log-out" class="nav_icon" title="Đăng xuất"></ion-icon>
                     <span class="nav_text">Đăng xuất</span>
                 </a>
@@ -331,10 +357,8 @@ a {
             </a>
         </div>
     </div>
-      <div class="bg-gray-100 p-6 col-start-2 col-span-7">
-        <div
-          class="bg-white rounded-lg shadow-md overflow-hidden table-container"
-        >
+    <div class="bg-gray-100 p-6 transition-all duration-500" id="mainContent">
+      <div class="bg-white rounded-lg shadow-md overflow-hidden table-container">
           <div class="flex justify-between items-center p-6 bg-gray-50">
             <div class="flex items-center gap-4">
               <h2 class="text-xl font-semibold text-gray-700">
@@ -356,14 +380,7 @@ a {
                 >
                   <i class="fas fa-book-open text-base"></i>
                 </button> -->
-                <div class="dropdown-content">
-                  <a href="#" onclick="showAddModal()">
-                    <i class="fa fa-plus mr-2"></i>Thêm sách mới
-                  </a>
-                  <a href="#" onclick="showFilterOptions()">
-                    <i class="fa fa-filter mr-2"></i>Lọc sách
-                  </a>
-                </div>
+                
               </div>
             </div>
             <div class="relative flex items-center">
@@ -798,7 +815,7 @@ a {
     <script src="/js/BookManagement.js"></script>
     <script src="/js/Filter.js"></script>
     <script src="/js/Search.js"></script>
-    <script src="/js/home.js"></script>
+    <script src="/js/Home/home.js"></script>
     <script src="/js/SortBook.js"></script>
     <script
       type="module"

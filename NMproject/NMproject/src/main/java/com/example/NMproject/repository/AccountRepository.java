@@ -24,7 +24,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 	Optional<AccountEntity> findByEmail(String email);
 
 	// Phương thức này sử dụng @Query đã có sẵn
-	@Query("SELECT new com.example.NMproject.dto.AccountResponse(a.userID, a.username, a.email, a.name, a.phone, a.address, a.status) FROM AccountEntity a")
+	@Query("SELECT new com.example.NMproject.dto.AccountResponse(a.userID, a.username, a.email, a.name, a.phone, a.address, a.userRole, a.status) FROM AccountEntity a")
 	List<AccountResponse> getAllUsersWithAccountInfo();
 
 	@Modifying

@@ -3,83 +3,114 @@ window.initializeUI = initializeUI;
 window.fetchBooks = fetchBooks;
 window.updateTableDisplay = updateTableDisplay;
 const body = document.getElementById("body");
-function notification(content, isSuccess){
-    const notification = document.getElementById('notification');
-    if(isSuccess){
-        notification.innerHTML = `
+function notification(content, isSuccess) {
+  const notification = document.getElementById("notification");
+  if (isSuccess) {
+    notification.innerHTML = `
             <ion-icon name="checkmark-outline"></ion-icon> ${content}
         `;
-        notification.style.backgroundColor = `#41eea0`;
-        notification.style.color = 'black';
-    } else {
-        notification.innerHTML = `
+    notification.style.backgroundColor = '#41eea0';
+    notification.style.color = "black";
+  } else {
+    notification.innerHTML = `
             <ion-icon name="alert-circle-outline"></ion-icon> ${content}
         `;
-        notification.style.backgroundColor = `red`;
-        notification.style.color = '#ededed';
-    }
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 0);
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 3500); 
+    notification.style.backgroundColor = red;
+    notification.style.color = "#ededed";
+  }
+  setTimeout(() => {
+    notification.classList.add("show");
+  }, 0);
+  setTimeout(() => {
+    notification.classList.remove("show");
+  }, 3500);
 }
 // show/hidden
+// --------------4:49 31/12 ------------------
 const showMenu = (toggleId, navbarId, bodyId) => {
-    const toggle = document.getElementById(toggleId),
-        navbar = document.getElementById(navbarId),
-        bodypadding = document.getElementById(bodyId);
-    if (toggle && navbar) {
-        toggle.addEventListener('click', () => {
-            navbar.classList.toggle('show');
-            toggle.classList.toggle('rotate');
-            bodypadding.classList.toggle('expander')
-        });
-    }
+  const toggle = document.getElementById(toggleId),
+    navbar = document.getElementById(navbarId),
+    bodypadding = document.getElementById(bodyId),
+    mainContent = document.getElementById("mainContent");
+
+  // Check if there's a saved state for the navbar in localStorage, default to 'open' if not set
+  const navbarState = localStorage.getItem("navbarState") || "open"; // Default to 'open' instead of 'closed'
+
+  // Set initial state based on saved value
+  if (navbarState === "open") {
+    navbar.classList.add("show");
+    toggle.classList.add("rotate");
+    bodypadding.classList.add("expander");
+    mainContent.style.marginLeft = "228px";
+  } else {
+    navbar.classList.remove("show");
+    toggle.classList.remove("rotate");
+    bodypadding.classList.remove("expander");
+    mainContent.style.marginLeft = "58px";
+  }
+
+  if (toggle && navbar) {
+    toggle.addEventListener("click", () => {
+      // Toggle the navbar and other elements
+      navbar.classList.toggle("show");
+      toggle.classList.toggle("rotate");
+      bodypadding.classList.toggle("expander");
+
+      // Handle table expansion or collapse
+      if (navbar.classList.contains("show")) {
+        mainContent.style.marginLeft = "228px";
+        localStorage.setItem("navbarState", "open"); // Save the state as 'open'
+      } else {
+        mainContent.style.marginLeft = "58px";
+        localStorage.setItem("navbarState", "closed"); // Save the state as 'closed'
+      }
+    });
+  }
 };
-showMenu('nav_toggle', 'navbar', 'body');
+
+// --------------4:49 31/12 ------------------
+showMenu("nav_toggle", "navbar", "body");
 // color hover of navbar
-const linkColor = document.querySelectorAll('.nav_link');
+const linkColor = document.querySelectorAll(".nav_link");
 function colorLink() {
-    linkColor.forEach(link => link.classList.remove('active'));
-    this.classList.add('active');
+  linkColor.forEach((link) => link.classList.remove("active"));
+  this.classList.add("active");
 }
-linkColor.forEach(link => link.addEventListener('click', colorLink));
+linkColor.forEach((link) => link.addEventListener("click", colorLink));
 // dropdown menu profile
 const dropDownProfile = (menuId, userpicId) => {
-    const userpic = document.getElementById(userpicId),
-        menuProfile = document.getElementById(menuId);
-    if (userpic && menuProfile) {
-        userpic.addEventListener('click', (e) => {
-            e.stopPropagation();
-            menuProfile.classList.toggle('active');
-        });
-        window.addEventListener('click', (e) => {
-            if (!menuProfile.contains(e.target) && !userpic.contains(e.target)) {
-                menuProfile.classList.remove('active');
-            }
-        });
-    }
+  const userpic = document.getElementById(userpicId),
+    menuProfile = document.getElementById(menuId);
+  if (userpic && menuProfile) {
+    userpic.addEventListener("click", (e) => {
+      e.stopPropagation();
+      menuProfile.classList.toggle("active");
+    });
+    window.addEventListener("click", (e) => {
+      if (!menuProfile.contains(e.target) && !userpic.contains(e.target)) {
+        menuProfile.classList.remove("active");
+      }
+    });
+  }
 };
-dropDownProfile('drop-menu-profile', 'userpic');
+dropDownProfile("drop-menu-profile", "userpic");
 
 // set username from sessionStorage
-const infoUser = JSON.parse(sessionStorage.getItem('infoUser'));
+const infoUser = JSON.parse(sessionStorage.getItem("infoUser"));
 console.log(infoUser);
 if (infoUser) {
-    document.addEventListener('DOMContentLoaded', () => {
-        const imgElement = `
-            <img src="http://localhost:8081${infoUser.imageLink}" class="user-pic-in">${infoUser.username}
-        `
-        document.getElementById('username').innerHTML = imgElement;
-        // document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
-        // document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
-        // document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
-        // document.getElementById('avt-in-profile').src = infoUser.imageLink || "/Assets/user0.png";
-
-    });
-};
+  document.addEventListener("DOMContentLoaded", () => {
+    const imgElement = `
+            <img src="http://localhost:8081/hinh_anh/avatar.jpg" class="user-pic-in">${infoUser.username}
+        `;
+    document.getElementById("username").innerHTML = imgElement;
+    // document.getElementById('profile-name').textContent = infoUser.name || "Chưa cập nhật";
+    // document.getElementById('profile-phone').textContent = infoUser.phone || "Chưa cập nhật";
+    // document.getElementById('profile-address').textContent = infoUser.address || "Chưa cập nhật";
+    // document.getElementById('avt-in-profile').src = infoUser.imageLink || "/Assets/user0.png";
+	 document.getElementById('userpic').src = `http://localhost:8081/hinh_anh/avatar.jpg`;
+  });
+}
 
 // Thêm event listener khi trang được load
 document.addEventListener("DOMContentLoaded", function () {
@@ -134,27 +165,43 @@ function setupDropdownAndUI() {
       // Thêm nút dropdown với menu
       const dropdownButton = document.createElement("div");
       dropdownButton.innerHTML = `
-        <div class="relative">
-              <button 
-                class="bg-green-500 text-white p-3 rounded-full hover:bg-yellow-500 transition duration-400"
-                id="bookOptionsButton"
-              >
-                <i class="fa fa-book-open animate-bounce text-base"></i>
-              </button>
-          <div 
-            id="bookDropdownMenu" 
-            class="hidden absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
-          >
-            <a href="#" onclick="showAddModal()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              <i class="fa fa-plus mr-2"></i>Thêm sách mới
-            </a>
-            <a href="#" onclick="showFilterOptions()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-              <i class="fa fa-filter mr-2"></i>Lọc sách
-            </a>
-          </div>
-        </div>
-      `;
+  <div class="relative">
+    <button 
+      class="bg-green-500 text-white p-3 rounded-full hover:bg-yellow-500 transition duration-400"
+      id="bookOptionsButton"
+    >
+      <i class="fa fa-book-open animate-bounce text-base"></i>
+    </button>
+    <div 
+      id="bookDropdownMenu" 
+      class="hidden absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+    >
+      <a href="#" onclick="showAddModal()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dropdown-item">
+        <i class="fa fa-plus mr-2"></i>Thêm sách mới
+      </a>
+      <a href="#" onclick="showFilterOptions()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dropdown-item">
+        <i class="fa fa-filter mr-2"></i>Lọc sách
+      </a>
+    </div>
+  </div>
+`;
       leftSection.appendChild(dropdownButton);
+
+      const bookOptionsButton = document.getElementById("bookOptionsButton");
+      const bookDropdownMenu = document.getElementById("bookDropdownMenu");
+
+      bookOptionsButton.addEventListener("click", () => {
+        // Toggle the visibility of the dropdown menu
+        bookDropdownMenu.classList.toggle("hidden");
+
+        // If the dropdown is now visible, add animation classes to the items
+        if (!bookDropdownMenu.classList.contains("hidden")) {
+          const items = bookDropdownMenu.querySelectorAll(".dropdown-item");
+          items.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`; // Delay each item for the animation
+          });
+        }
+      });
 
       // Thêm x lý click cho dropdown
       const button = dropdownButton.querySelector("#bookOptionsButton");
@@ -323,7 +370,11 @@ document.getElementById("rowsPerPage").addEventListener("change", (e) => {
 // Thêm các hàm xử lý modal chi tiết
 function showBookDetail(id) {
   currentBookId = id;
-  fetch(`${API_URL}/detail/${id}`)
+  fetch(`${API_URL}/detail/${id}`
+	
+	
+	
+  )
     .then((response) => response.json())
     .then((book) => {
       const detailContent = document.querySelector(".book-detail-content");
@@ -375,7 +426,9 @@ function handleDelete() {
 
 // Xử lý thêm sách mới
 
-document.getElementById("bookForm").addEventListener("submit", async function (e) {
+document
+  .getElementById("bookForm")
+  .addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const formData = new FormData();
@@ -384,67 +437,64 @@ document.getElementById("bookForm").addEventListener("submit", async function (e
     console.log(imageFile);
 
     if (imageFile) {
-        formData.append("image", imageFile); // Đúng tên tham số
+      formData.append("image", imageFile); // Đúng tên tham số
     } else {
-        alert("Vui lòng chọn ảnh cho sách!");
-        return;
+      alert("Vui lòng chọn ảnh cho sách!");
+      return;
     }
 
     const newBook = {
-        title: document.getElementById("title").value.trim(),
-        author: document.getElementById("author").value.trim(),
-        category: document.getElementById("category").value.trim(),
-        description: document.getElementById("description").value.trim() || null,
-        publishDate: document.getElementById("date").value.trim(),
-        quantityTotal: parseInt(document.getElementById("quantityTotal").value),
-        quantityValid: parseInt(document.getElementById("quantityValid").value),
+      title: document.getElementById("title").value.trim(),
+      author: document.getElementById("author").value.trim(),
+      category: document.getElementById("category").value.trim(),
+      description: document.getElementById("description").value.trim() || null,
+      publishDate: document.getElementById("date").value.trim(),
+      quantityTotal: parseInt(document.getElementById("quantityTotal").value),
+      quantityValid: parseInt(document.getElementById("quantityValid").value),
     };
 
     if (newBook.quantityValid > newBook.quantityTotal) {
-        alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
-        return;
+      alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
+      return;
     }
 
     if (
-        !newBook.title ||
-        !newBook.author ||
-        !newBook.category ||
-        !newBook.publishDate ||
-        isNaN(newBook.quantityTotal) ||
-        isNaN(newBook.quantityValid)
+      !newBook.title ||
+      !newBook.author ||
+      !newBook.category ||
+      !newBook.publishDate ||
+      isNaN(newBook.quantityTotal) ||
+      isNaN(newBook.quantityValid)
     ) {
-        alert("Vui lòng điền đầy đủ thông tin và kiểm tra số lượng!");
-        return;
+      alert("Vui lòng điền đầy đủ thông tin và kiểm tra số lượng!");
+      return;
     }
 
     formData.append("book", JSON.stringify(newBook)); // Thêm JSON đúng tham số
 
     try {
-        const response = await fetch(`${API_URL}/addbooks`, {
-            method: "POST",
-            body: formData,
-        });
+      const response = await fetch(`${API_URL}/addbooks `, {
+        method: "POST",
+        body: formData,
+      });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Backend error:", errorText);
-            alert(`Lỗi: ${response.status} - ${errorText}`);
-            return;
-        }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Backend error:", errorText);
+        alert(`Lỗi: ${response.status} - ${errorText}`);
+        return;
+      }
 
-        const data = await response.json();
-        alert("Thêm sách thành công!");
-        this.reset();
-        fetchBooks();
-        closeAddModal();
+      const data = await response.json();
+      alert("Thêm sách thành công!");
+      this.reset();
+      fetchBooks();
+      closeAddModal();
     } catch (error) {
-        console.error("Error:", error);
-        alert(error.message || "Lỗi khi thêm sách");
+      console.error("Error:", error);
+      alert(error.message || "Lỗi khi thêm sách");
     }
-});
-
-	
-
+  });
 
 // Thêm các hàm xử lý modal
 function showUpdateModal(id) {
@@ -489,59 +539,64 @@ function updateBook(id) {
 }
 
 // Thêm xử l form cập nhật
-document.getElementById("updateForm").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const id = document.getElementById("updateBookId").value.trim(); // Lấy id sách từ input ẩn hoặc nguồn khác
+document
+  .getElementById("updateForm")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const id = document.getElementById("updateBookId").value.trim(); // Lấy id sách từ input ẩn hoặc nguồn khác
 
-  const formData = new FormData();
-  const imageFile = document.getElementById("updateImageFile").files[0]; // Lấy file ảnh từ input
+    const formData = new FormData();
+    const imageFile = document.getElementById("updateImageFile").files[0]; // Lấy file ảnh từ input
 
-  if (imageFile) {
-    formData.append("file", imageFile); // Thêm file ảnh vào FormData
-  }
-
-  // Chuẩn bị dữ liệu sách cần cập nhật
-  const updatedBook = {
-    title: document.getElementById("updateName").value.trim(),
-    author: document.getElementById("updateAuthor").value.trim(),
-    category: document.getElementById("updateCategory").value.trim(),
-    description: document.getElementById("updateDescription").value.trim() || null,
-    publishDate: document.getElementById("updateDate").value.trim(),
-    quantityTotal: parseInt(document.getElementById("updateTotalQuantity").value),
-    quantityValid: parseInt(document.getElementById("updateAvailableQuantity").value),
-  };
-
-  // Kiểm tra logic số lượng
-  if (updatedBook.quantityValid > updatedBook.quantityTotal) {
-    alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
-    return;
-  }
-
-  // Thêm thông tin sách vào FormData
-  formData.append("bookDTO", JSON.stringify(updatedBook));
-
-  try {
-    const response = await fetch(`${API_URL}/update/${id}`, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Lỗi ${response.status}: ${errorText}`);
+    if (imageFile) {
+      formData.append("file", imageFile); // Thêm file ảnh vào FormData
     }
 
-    const data = await response.json();
-    alert("Cập nhật sách thành công!");
-    closeUpdateModal();
-    fetchBooks(); // Cập nhật lại danh sách sách
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Lỗi khi cập nhật sách: " + error.message);
-  }
-});
+    // Chuẩn bị dữ liệu sách cần cập nhật
+    const updatedBook = {
+      title: document.getElementById("updateName").value.trim(),
+      author: document.getElementById("updateAuthor").value.trim(),
+      category: document.getElementById("updateCategory").value.trim(),
+      description:
+        document.getElementById("updateDescription").value.trim() || null,
+      publishDate: document.getElementById("updateDate").value.trim(),
+      quantityTotal: parseInt(
+        document.getElementById("updateTotalQuantity").value
+      ),
+      quantityValid: parseInt(
+        document.getElementById("updateAvailableQuantity").value
+      ),
+    };
 
+    // Kiểm tra logic số lượng
+    if (updatedBook.quantityValid > updatedBook.quantityTotal) {
+      alert("Số lượng còn lại không thể lớn hơn tổng số lượng!");
+      return;
+    }
 
+    // Thêm thông tin sách vào FormData
+    formData.append("bookDTO", JSON.stringify(updatedBook));
+
+    try {
+      const response = await fetch(`${API_URL}/update/${id}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Lỗi ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      alert("Cập nhật sách thành công!");
+      closeUpdateModal();
+      fetchBooks(); // Cập nhật lại danh sách sách
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Lỗi khi cập nhật sách: " + error.message);
+    }
+  });
 
 // Hàm xóa sách
 function deleteBook(id) {
@@ -561,7 +616,7 @@ function deleteBook(id) {
     })
     .catch((error) => {
       console.error("Error:", error);
-      alert("Lỗi khi xóa sách: " + error.message);
+      alert("Sách đang được sử dụng");
     });
 }
 
